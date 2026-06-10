@@ -6,128 +6,86 @@ isActive: true
 # Requirements
 
 ### Overview & Goals
-Deliver a playable browser Tic-Tac-Toe game (human vs computer) with a **clear local startup flow** so you can run it and test it in the browser yourself, including a congratulatory message when the computer loses.
+Add a top-level `README.md` that explains how to set up this TypeScript project locally and run the current build workflow.
 
 ### Scope
 **In Scope**
-- Replace `src/index.ts` placeholder logic with the actual game bootstrap.
-- Add browser entry structure so the app can be launched locally.
-- Implement human vs computer Tic-Tac-Toe gameplay with win/draw detection.
-- Show explicit celebratory messaging when the human wins (computer loses).
-- Provide a concrete `npm` startup path (build + serve + URL to open).
-- Keep the page ready to host additional games later (without implementing them now).
+- Create `README.md` at the project root.
+- Document prerequisites (`Node.js` + `npm`).
+- Document local setup and command flow using existing scripts.
+- Include a short project structure summary so new contributors know where to start.
 
 **Out of Scope**
-- Additional games implementation.
-- Backend/services, accounts, persistence, multiplayer, or AI difficulty levels.
-- Introducing a heavy framework/toolchain when a lightweight TypeScript + static-serve flow is sufficient.
+- Implementing game features in this task.
+- Adding a new frontend toolchain or framework.
+- Expanding documentation beyond setup/start basics.
 
 ### Functional Requirements
-- Render a clickable 3x3 board and block moves on occupied cells.
-- After each valid human move, trigger one legal computer move automatically.
-- Detect and display end states: human win, computer win, draw.
-- Show turn/result status text and provide restart control.
-- On human win, display congratulatory copy clearly tied to the computer losing.
-- Expose a reproducible browser run workflow in scripts and usage steps:
-  - install dependencies,
-  - compile TypeScript,
-  - start a local static server,
-  - open the game URL in a browser.
-
-### Immediate Next Step
-- Begin with **Step 1** from Delivery Steps: wire `index.html`, update scripts for local startup, and ensure there is one obvious command path to run and test in the browser.
+- README includes prerequisites with minimum recommended versions.
+- README includes a copy-paste setup sequence:
+  - `npm install`
+  - `npm run build`
+  - how to run generated output (if applicable).
+- README clearly states the current project status (minimal TypeScript entrypoint today).
+- README includes a short “next steps” note for where feature work will happen (`src/`).
 
 # Technical Design
 
 ### Current Implementation
-- `src/index.ts` currently only logs `Happy developing ✨`.
-- `package.json` currently exposes only `build` (`tsc`) and has no run/start script.
-- `tsconfig.json` outputs to `dist` with `module: commonjs`, which may require adjustment for direct browser loading.
-- No existing UI/game modules or similar feature implementations exist in this repository.
+- No `README.md` exists in the repository root.
+- `package.json` exposes only `build` (`tsc`).
+- `src/index.ts` currently logs `Happy developing ✨`.
+- `tsconfig.json` compiles `src` into `dist`.
 
 ### Key Decisions
-- Keep implementation in vanilla TypeScript to match existing project conventions and dependency footprint.
-- Separate pure game logic from DOM wiring (`model`/`engine` vs `ui`) so logic can be validated deterministically.
-- Add a lightweight **startup workflow** in `package.json` scripts so local browser testing is straightforward.
-- Use a minimal static-server approach (instead of adding a full frontend framework/bundler) for local testing simplicity.
-- Keep an extension-friendly host structure for future games while registering only Tic-Tac-Toe now.
+- Keep this task documentation-only unless setup instructions reveal a command gap that must be clarified.
+- Document only commands that already exist in the repository to avoid drift.
+- Keep README concise and onboarding-focused (quick start first, details second).
 
 ### Proposed Changes
-- Add browser entry point (`index.html`) with an app mount container and browser script reference.
-- Replace `src/index.ts` with app composition/bootstrap and game registration.
-- Introduce Tic-Tac-Toe modules for:
-  - state model and types,
-  - rules/winner evaluation,
-  - computer move selection,
-  - UI rendering and event handling.
-- Update `package.json` scripts to include explicit startup commands (build + serve), so the browser test loop is easy to run.
-- Adjust `tsconfig.json` if needed to produce browser-compatible module output.
-
-### Data Models / Contracts
-- `type Cell = 'X' | 'O' | null`
-- `type Board = Cell[]` (length 9)
-- `type GameResult = 'human-win' | 'computer-win' | 'draw' | 'in-progress'`
-- Planned logic contracts:
-  - `createInitialBoard(): Board`
-  - `applyMove(board: Board, index: number, mark: 'X' | 'O'): Board`
-  - `evaluateResult(board: Board): GameResult`
-  - `pickComputerMove(board: Board): number`
+- Add `README.md` with sections:
+  - Project overview
+  - Prerequisites
+  - Setup and build commands
+  - Run/output notes
+  - Repository structure (`src/`, `dist/`, config files)
+- Use command blocks formatted for direct terminal copy/paste.
+- Add a short troubleshooting note for common setup failures (missing Node/npm, dependency install issues).
 
 ### File Structure
-- **Modify**:
-  - `src/index.ts`
-  - `package.json`
-  - `tsconfig.json` (if required for browser-friendly output)
 - **Add**:
-  - `index.html`
-  - `src/ticTacToe/model.ts`
-  - `src/ticTacToe/engine.ts`
-  - `src/ticTacToe/ui.ts`
-  - `src/styles.css` (optional, for board/status clarity)
+  - `README.md`
+- **No source-code file changes required** for this task.
 
 ### Risks
-- Current `commonjs` output may require config changes for direct browser execution.
-- A static-serve workflow must be explicit in scripts; otherwise testing remains unclear for local users.
+- README can become inaccurate if it documents commands that are not currently present.
+- Version-specific setup guidance may become stale; keep wording minimal and conservative.
 
 # Testing
 
 ### Validation Approach
-- Run the final startup command path end-to-end (`npm install`, build/start scripts, open local URL).
-- Validate full gameplay behavior in the browser.
-- Validate pure engine behavior with deterministic scenario checks (win/draw/invalid moves).
+- Validate the documented setup flow from a clean local environment.
+- Confirm every command listed in README executes successfully in this repo.
 
 ### Key Scenarios
-- Startup flow works from a clean clone and results in a reachable local game page.
-- Human move is accepted only on empty cell and computer responds once.
-- Human win path shows congratulatory message.
-- Computer win and draw paths show correct result messaging.
-- Restart resets board, turn state, and status.
+- New user follows README and installs dependencies successfully.
+- `npm run build` compiles TypeScript into `dist`.
+- Documented run/output note matches actual behavior of current `dist/index.js`.
 
 ### Edge Cases
-- Clicking occupied cell has no effect.
-- No moves allowed after game completion.
-- Computer move picker never chooses occupied indexes.
-- Browser launch works without requiring any manual file editing or hidden setup.
+- Missing Node/npm is called out clearly in prerequisites.
+- README avoids referencing non-existent scripts (e.g., `start`/`dev`) unless they are added.
 
 # Delivery Steps
 
-###   Step 1: Implement local browser startup workflow
-The project can be started locally and opened in a browser through explicit npm commands.
-- Add `index.html` with an application mount container and script wiring.
-- Update `package.json` scripts so build + local serve commands are obvious and repeatable.
-- Adjust `tsconfig.json` only as needed for browser-compatible output.
-- Replace placeholder bootstrap in `src/index.ts` with app mount initialization.
+###   Step 1: Define the exact setup workflow to document
+A precise, repository-accurate setup command sequence is finalized for documentation.
+- Confirm current scripts in `package.json` and build output behavior from `tsconfig.json`.
+- Lock the setup flow to only existing commands (`npm install`, `npm run build`, output/run note).
+- Capture concise prerequisites and assumptions for local development environments.
 
-###   Step 2: Implement Tic-Tac-Toe game domain and human-vs-computer loop
-A complete playable game loop exists with correct rules and result messaging.
-- Create `src/ticTacToe/model.ts` and `src/ticTacToe/engine.ts` for board state, move validation, result evaluation, and computer move selection.
-- Create `src/ticTacToe/ui.ts` to render board/status/restart controls and bind events.
-- Enforce turn order, legal-move constraints, and game-over locking.
-- Show explicit congratulatory text when the human wins.
-
-###   Step 3: Validate browser test flow and finalize extension-friendly structure
-The game is verified end-to-end in the browser with a clear repeatable test checklist.
-- Add/confirm a minimal game host structure in `src/index.ts` so additional games can be attached later without rewriting the page shell.
-- Execute startup and gameplay scenarios from the Testing tab.
-- Verify restart, end-state messaging, and edge cases in the running app.
-- Ensure final scripts and structure remain lightweight and consistent with current TypeScript-only conventions.
+###   Step 2: Add README setup guide and verify instructions
+The repository contains a clear `README.md` that a new contributor can follow end-to-end.
+- Create `README.md` with overview, prerequisites, setup commands, output/run notes, and brief project structure.
+- Add a short troubleshooting section for common setup issues (missing Node/npm, failed install/build).
+- Execute the documented commands in order and adjust wording so the README matches real project behavior.
