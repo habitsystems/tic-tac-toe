@@ -948,31 +948,27 @@ function renderTree() {
         });
         parent.appendChild(fruit);
     };
+    const createBranch = (className, top, left) => {
+        const branch = document.createElement('div');
+        branch.className = className;
+        branch.style.top = top;
+        branch.style.left = left;
+        const foliage = document.createElement('div');
+        foliage.className = 'tree-foliage';
+        createFruitElement(foliage);
+        branch.appendChild(foliage);
+        trunk.appendChild(branch);
+    };
     // Main foliage
     const mainFoliage = document.createElement('div');
     mainFoliage.className = 'tree-foliage main';
     createFruitElement(mainFoliage);
     trunk.appendChild(mainFoliage);
-    // Left branch
-    const leftBranch = document.createElement('div');
-    leftBranch.className = 'tree-branch left';
-    leftBranch.style.top = '200px';
-    leftBranch.style.left = '30px';
-    const leftFoliage = document.createElement('div');
-    leftFoliage.className = 'tree-foliage';
-    createFruitElement(leftFoliage);
-    leftBranch.appendChild(leftFoliage);
-    trunk.appendChild(leftBranch);
-    // Right branch
-    const rightBranch = document.createElement('div');
-    rightBranch.className = 'tree-branch right';
-    rightBranch.style.top = '360px';
-    rightBranch.style.left = '30px';
-    const rightFoliage = document.createElement('div');
-    rightFoliage.className = 'tree-foliage';
-    createFruitElement(rightFoliage);
-    rightBranch.appendChild(rightFoliage);
-    trunk.appendChild(rightBranch);
+    // Branches
+    createBranch('tree-branch left', '200px', '30px');
+    createBranch('tree-branch right', '360px', '30px');
+    createBranch('tree-branch left', '300px', '30px');
+    createBranch('tree-branch right', '120px', '30px');
     treeElement.appendChild(trunk);
     // Position to left or right of scoreboard
     const side = Math.random() > 0.5 ? 'left' : 'right';
