@@ -1,13 +1,15 @@
 {
   "name": "exesandos",
   "version": "1.0.0",
-  "description": "",
+  "description": "A simple Tic-Tac-Toe (Exes and Os) project in TypeScript.",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "start": "servor --reload"
   },
   "dependencies": {},
   "devDependencies": {
+    "servor": "^4.0.2",
     "typescript": "^5.5.3"
   },
   "private": true
