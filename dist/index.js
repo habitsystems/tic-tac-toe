@@ -1,4 +1,67 @@
 "use strict";
+const STORAGE_KEY_SECRET = 'exesandos-key-v1';
+const STORAGE_VALUE_SECRET = 'exesandos-value-v1';
+function xorBytes(input, secret) {
+    const output = new Uint8Array(input.length);
+    for (let i = 0; i < input.length; i++) {
+        output[i] = input[i] ^ secret[i % secret.length];
+    }
+    return output;
+}
+function toBase64(bytes) {
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+}
+function fromBase64(base64) {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+}
+function obfuscate(value, secret) {
+    const encoder = new TextEncoder();
+    const valueBytes = encoder.encode(value);
+    const secretBytes = encoder.encode(secret);
+    return toBase64(xorBytes(valueBytes, secretBytes));
+}
+function deobfuscate(value, secret) {
+    const decoder = new TextDecoder();
+    const secretBytes = new TextEncoder().encode(secret);
+    const decoded = xorBytes(fromBase64(value), secretBytes);
+    return decoder.decode(decoded);
+}
+function getEncryptedStorageKey(rawKey) {
+    return `exo_${obfuscate(rawKey, STORAGE_KEY_SECRET)}`;
+}
+function storageSet(rawKey, rawValue) {
+    const encryptedKey = getEncryptedStorageKey(rawKey);
+    const encryptedValue = obfuscate(rawValue, STORAGE_VALUE_SECRET);
+    localStorage.setItem(encryptedKey, encryptedValue);
+    localStorage.removeItem(rawKey);
+}
+function storageGet(rawKey, fallback) {
+    const encryptedKey = getEncryptedStorageKey(rawKey);
+    const encryptedValue = localStorage.getItem(encryptedKey);
+    if (encryptedValue !== null) {
+        try {
+            return deobfuscate(encryptedValue, STORAGE_VALUE_SECRET);
+        }
+        catch (_a) {
+            localStorage.removeItem(encryptedKey);
+        }
+    }
+    const legacyValue = localStorage.getItem(rawKey);
+    if (legacyValue !== null) {
+        storageSet(rawKey, legacyValue);
+        return legacyValue;
+    }
+    return fallback;
+}
 let currentPlayer = 'X';
 let board = Array(9).fill(null);
 let gameActive = true;
@@ -6,21 +69,21 @@ let isMisereMode = false;
 let is3DMode = false;
 let is4x4Mode = false;
 let is4x4x4Mode = false;
-let isHardMode = localStorage.getItem('hard_mode') === 'true';
-let hardModeWins = parseInt(localStorage.getItem('hard_mode_wins') || '0');
-let useMonsterPieces = localStorage.getItem('use_monster_pieces') === 'true';
-let flowerLossCount = parseInt(localStorage.getItem('flower_loss_count') || '0');
+let isHardMode = storageGet('hard_mode', 'false') === 'true';
+let hardModeWins = parseInt(storageGet('hard_mode_wins', '0'));
+let useMonsterPieces = storageGet('use_monster_pieces', 'false') === 'true';
+let flowerLossCount = parseInt(storageGet('flower_loss_count', '0'));
 let rotationX = -20;
 let rotationY = -20;
 const wins = {
-    'default': parseInt(localStorage.getItem('wins_default') || '0'),
-    'misere': parseInt(localStorage.getItem('wins_misere') || '0'),
-    '3d': parseInt(localStorage.getItem('wins_3d') || '0'),
-    '4x4': parseInt(localStorage.getItem('wins_4x4') || '0')
+    'default': parseInt(storageGet('wins_default', '0')),
+    'misere': parseInt(storageGet('wins_misere', '0')),
+    '3d': parseInt(storageGet('wins_3d', '0')),
+    '4x4': parseInt(storageGet('wins_4x4', '0'))
 };
 const gameScores = {
-    'X': JSON.parse(localStorage.getItem('score_X_v2') || '{}'),
-    'O': JSON.parse(localStorage.getItem('score_O_v2') || '{}')
+    'X': JSON.parse(storageGet('score_X_v2', '{}')),
+    'O': JSON.parse(storageGet('score_O_v2', '{}'))
 };
 const statusDisplay = document.getElementById('status');
 const gameTitle = document.getElementById('game-title');
@@ -342,11 +405,11 @@ function handleResultValidation() {
                 updateScores('X');
                 if (useMonsterPieces && !isHardMode) {
                     flowerLossCount = 0;
-                    localStorage.setItem('flower_loss_count', '0');
+                    storageSet('flower_loss_count', '0');
                 }
                 if (isHardMode) {
                     hardModeWins++;
-                    localStorage.setItem('hard_mode_wins', hardModeWins.toString());
+                    storageSet('hard_mode_wins', hardModeWins.toString());
                     renderMonsters();
                 }
             }
@@ -354,14 +417,14 @@ function handleResultValidation() {
                 updateScores('O');
                 if (useMonsterPieces && !isHardMode) {
                     flowerLossCount++;
-                    localStorage.setItem('flower_loss_count', flowerLossCount.toString());
+                    storageSet('flower_loss_count', flowerLossCount.toString());
                     if (flowerLossCount >= 5) {
                         document.body.classList.add('meadow-wilted');
                         setTimeout(() => {
                             useMonsterPieces = false;
                             flowerLossCount = 0;
-                            localStorage.setItem('use_monster_pieces', 'false');
-                            localStorage.setItem('flower_loss_count', '0');
+                            storageSet('use_monster_pieces', 'false');
+                            storageSet('flower_loss_count', '0');
                             showMessage("You've lost too many times. The flowers have wilted... back to basics.");
                             document.body.classList.remove('meadow-wilted');
                             updateHardModeTheme();
@@ -397,7 +460,7 @@ function recordWin() {
                     : 'default';
     if (currentMode !== '4x4x4') {
         wins[currentMode]++;
-        localStorage.setItem(`wins_${currentMode}`, wins[currentMode].toString());
+        storageSet(`wins_${currentMode}`, wins[currentMode].toString());
         updateUnlockStatus();
     }
 }
@@ -411,7 +474,7 @@ function updateScores(winner) {
         gameScores[winner][currentMode] = 0;
     }
     gameScores[winner][currentMode]++;
-    localStorage.setItem(`score_${winner}_v2`, JSON.stringify(gameScores[winner]));
+    storageSet(`score_${winner}_v2`, JSON.stringify(gameScores[winner]));
     renderScores();
 }
 function renderScores() {
@@ -629,7 +692,7 @@ mode4x4x4Toggle.addEventListener('change', () => {
 });
 hardModeToggle.addEventListener('change', () => {
     isHardMode = hardModeToggle.checked;
-    localStorage.setItem('hard_mode', isHardMode.toString());
+    storageSet('hard_mode', isHardMode.toString());
     updateHardModeTheme();
 });
 function updateHardModeTheme() {
@@ -691,7 +754,7 @@ function renderMonsters() {
             monster.addEventListener('click', (e) => {
                 e.stopPropagation();
                 useMonsterPieces = !useMonsterPieces;
-                localStorage.setItem('use_monster_pieces', useMonsterPieces.toString());
+                storageSet('use_monster_pieces', useMonsterPieces.toString());
                 showMessage(useMonsterPieces ? (isHardMode ? "Monsters have taken over the game!" : "Flowers have bloomed in the garden!") : "The nightmare recedes... for now.");
                 updateHardModeTheme();
                 handleRestartGame();
@@ -809,18 +872,18 @@ function handleResetScores() {
         // Reset wins (unlocks)
         Object.keys(wins).forEach(key => {
             wins[key] = 0;
-            localStorage.setItem(`wins_${key}`, '0');
+            storageSet(`wins_${key}`, '0');
         });
         // Reset game scores
         Object.keys(gameScores).forEach(key => {
             gameScores[key] = {};
-            localStorage.setItem(`score_${key}_v2`, '{}');
-            localStorage.setItem(`score_${key}`, '0'); // Also clear old format
+            storageSet(`score_${key}_v2`, '{}');
+            localStorage.removeItem(`score_${key}`); // Also clear old format
         });
         hardModeWins = 0;
-        localStorage.setItem('hard_mode_wins', '0');
+        storageSet('hard_mode_wins', '0');
         flowerLossCount = 0;
-        localStorage.setItem('flower_loss_count', '0');
+        storageSet('flower_loss_count', '0');
         removeMonsters();
         removeMeadow();
         updateUnlockStatus();
