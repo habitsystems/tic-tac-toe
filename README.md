@@ -8,8 +8,14 @@ A simple Tic-Tac-Toe (Exes and Os) project in TypeScript.
 
 ### Prerequisites
 
-- Node.js
-- npm
+- Node.js 24.x
+- npm 10.x (or newer)
+
+If you use `nvm`, this repo includes `.nvmrc`:
+
+```bash
+nvm use
+```
 
 ### Installation
 
