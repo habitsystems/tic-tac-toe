@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exes and Os</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        body.hard-mode-active {
+            background-color: #1a1a1a;
+            color: #d9534f;
+            background-image: radial-gradient(circle, #222 1px, transparent 1px);
+            background-size: 3px 3px;
+        }
+        body.hard-mode-active h1 {
+            color: #8b0000;
+            text-shadow: 2px 2px 5px #000;
+            animation: glitch 0.3s infinite alternate;
+        }
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        body.hard-mode-active .cell {
+            background-color: #2a2a2a;
+            color: #eee;
+            border-color: #444;
+            transition: all 0.2s;
+        }
+        body.hard-mode-active .cell:hover {
+            background-color: #3a3a3a;
+            box-shadow: 0 0 10px #d9534f;
+        }
+        body.hard-mode-active .layer {
+            background-color: #000;
+            border-color: #8b0000;
+        }
+        body.hard-mode-active .score-container {
+            background-color: #111;
+            border-color: #8b0000;
+            color: #d9534f;
+        }
+        /* Twitchy effect for random elements */
+        @keyframes twitch {
+            0% { opacity: 1; transform: scale(1); }
+            1% { opacity: 0.8; transform: scale(1.01) translateX(1px); }
+            2% { opacity: 1; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1); }
+            51% { opacity: 0.9; transform: scale(0.99) skewX(2deg); }
+            52% { opacity: 1; transform: scale(1); }
+        }
+        body.hard-mode-active #game-container {
+            animation: twitch 4s infinite;
+        }
+        /* Meadow theme for flower mode */
+        body.meadow-active {
+            background-color: #e0f7fa; /* Light sky blue */
+            background-image: 
+                linear-gradient(to bottom, transparent 60%, #9ccc65 60%), /* Grass bottom */
+                radial-gradient(circle at 20% 20%, #fff9c4 10%, transparent 20%); /* Faint sun */
+            overflow: hidden;
+            transition: background-color 2s, background-image 2s;
+        }
+        body.meadow-active.meadow-wilted {
+            background-color: #cfd8dc; /* Grayish sky */
+            background-image: 
+                linear-gradient(to bottom, transparent 60%, #8d6e63 60%), /* Brown grass bottom */
+                radial-gradient(circle at 20% 20%, #eeeeee 10%, transparent 20%); /* Faint sun */
+        }
+        .grass-blade {
+            position: fixed;
+            bottom: 0;
+            width: 2px;
+            height: 100px;
+            background: #7cb342;
+            transform-origin: bottom center;
+            animation: breeze 3s infinite ease-in-out;
+            z-index: -1;
+            transition: opacity 1s ease-in-out, background 2s, height 2s;
+            opacity: 1;
+        }
+        .meadow-wilted .grass-blade {
+            background: #5d4037; /* Brown withered grass */
+            height: 50px !important;
+            animation: none;
+            transform: rotate(45deg);
+        }
+        body:not(.meadow-active) .grass-blade {
+            opacity: 0;
+        }
+        @keyframes breeze {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(10deg); }
+        }
+        .bee {
+            position: fixed;
+            font-size: 1.2rem;
+            z-index: 1;
+            pointer-events: none;
+            animation: bee-fly 10s infinite linear;
+            transition: opacity 1s ease-in-out, filter 2s;
+            opacity: 1;
+        }
+        .meadow-wilted .bee {
+            filter: grayscale(1) brightness(0.5);
+            animation-play-state: paused;
+        }
+        body:not(.meadow-active) .bee {
+            opacity: 0;
+        }
+        @keyframes bee-fly {
+            0% { transform: translate(-10vw, 20vh) rotate(0deg); }
+            15% { transform: translate(15vw, 10vh) rotate(10deg); }
+            30% { transform: translate(45vw, 30vh) rotate(-10deg); }
+            45% { transform: translate(75vw, 15vh) rotate(5deg); }
+            60% { transform: translate(110vw, 25vh) rotate(0deg); }
+            100% { transform: translate(110vw, 25vh) rotate(0deg); }
+        }
+        .bee.landed, .bird.landed {
+            animation: none !important;
+            transition: all 1s ease-in-out !important;
+        }
+        .bird {
+            position: fixed;
+            font-size: 1.5rem;
+            z-index: 0;
+            pointer-events: none;
+            animation: bird-fly 20s infinite linear;
+            transition: opacity 1s ease-in-out;
+            opacity: 1;
+        }
+        .bird .wing {
+            display: inline-block;
+            animation: flap 0.2s infinite alternate;
+        }
+        @keyframes flap {
+            from { transform: rotateX(0deg); }
+            to { transform: rotateX(60deg); }
+        }
+        body:not(.meadow-active) .bird {
+            opacity: 0;
+        }
+        @keyframes bird-fly {
+            0% { transform: translate(110vw, 5vh) scaleX(1); }
+            45% { transform: translate(-10vw, 15vh) scaleX(1); }
+            50% { transform: translate(-10vw, 15vh) scaleX(-1); }
+            95% { transform: translate(110vw, 5vh) scaleX(-1); }
+            100% { transform: translate(110vw, 5vh) scaleX(1); }
+        }
+        .snail-traversal {
+            position: fixed;
+            bottom: 20px;
+            left: -50px;
+            font-size: 1.5rem;
+            z-index: 5;
+            transition: left 10s linear;
+        }
+        .tree {
+            position: fixed;
+            bottom: 0;
+            font-size: 1rem;
+            z-index: -1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform-origin: bottom center;
+            transition: opacity 1s ease-in-out;
+            opacity: 1;
+        }
+        .tree-trunk {
+            width: 60px;
+            background: #4e342e;
+            height: 0;
+            transition: height 5s ease-out;
+            position: relative;
+            border-radius: 5px 5px 0 0;
+            box-shadow: inset 5px 0 10px rgba(0,0,0,0.3);
+        }
+        .tree-branch {
+            position: absolute;
+            background: #4e342e;
+            height: 20px;
+            width: 0;
+            transition: width 5s ease-out;
+            transform-origin: left center;
+            border-radius: 10px;
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.2);
+        }
+        .tree-branch.left {
+            transform: rotate(-30deg);
+        }
+        .tree-branch.right {
+            transform: rotate(30deg);
+        }
+        .tree-foliage {
+            width: 0;
+            height: 0;
+            background: #2e7d32;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0;
+            transition: all 5s ease-out;
+            position: absolute;
+        }
+        .tree.growing .tree-trunk {
+            height: 600px;
+        }
+        .tree.growing .tree-branch {
+            width: 160px;
+        }
+        .tree.growing .tree-foliage {
+            width: 240px;
+            height: 240px;
+            font-size: 5rem;
+        }
+        .tree-foliage span {
+            display: inline-block;
+            transition: transform 1s ease-out, opacity 0.5s;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+        .tree-foliage span.eating {
+            transform: scale(0);
+            opacity: 0;
+        }
+        .tree-foliage span.growing-fruit {
+            animation: grow-fruit 2s ease-out forwards;
+        }
+        @keyframes grow-fruit {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .tree-foliage {
+            background: #2e7d32;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0;
+            transition: all 5s ease-out;
+            position: absolute;
+            border-radius: 40% 60% 50% 50% / 50% 40% 60% 50%;
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.2);
+        }
+        .tree-foliage.main {
+            top: -120px;
+            left: -105px;
+        }
+        .tree-branch.left .tree-foliage {
+            top: -110px;
+            right: -120px;
+            border-radius: 60% 40% 50% 50% / 40% 50% 60% 50%;
+        }
+        .tree-branch.right .tree-foliage {
+            top: -110px;
+            right: -120px;
+            border-radius: 50% 50% 40% 60% / 50% 60% 40% 50%;
+        }
+        .tree.breezy {
+            animation: tree-breeze 4s infinite ease-in-out;
+        }
+        @keyframes tree-breeze {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+        body.meadow-wilted .tree-trunk {
+            background: #3e2723;
+        }
+        body.meadow-wilted .tree-foliage {
+            background: #3e2723;
+            opacity: 0.7;
+        }
+        body:not(.meadow-active) .tree {
+            opacity: 0;
+        }
+        /* Double exposure effect simulation */
+        body.hard-mode-active::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        body.hard-mode-active::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 50%, black 150%);
+            pointer-events: none;
+            z-index: 1001;
+        }
+        .monster {
+            position: fixed;
+            font-size: 2rem;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.6;
+            filter: grayscale(1) contrast(1.5) brightness(0.5) sepia(1) hue-rotate(-50deg);
+            animation: monster-twitch 5s infinite;
+        }
+        @keyframes monster-twitch {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(2px, -2px) rotate(5deg); }
+            20% { transform: translate(-2px, 1px) rotate(-5deg); }
+            30% { transform: translate(1px, -1px) rotate(2deg); }
+            40% { transform: translate(-1px, 2px) rotate(-3deg); }
+        }
+        .score-header {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        .score-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #333;
+        }
+        #game-container {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 40px;
+            perspective: 1000px;
+        }
+        .score-container {
+            width: 150px;
+            height: 300px;
+            background: #fff;
+            border: 2px solid #333;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 10px;
+            overflow-y: auto;
+        }
+        .tally-group {
+            display: inline-block;
+            position: relative;
+            width: 30px;
+            height: 40px;
+            margin-right: 5px;
+        }
+        .tally-mark {
+            position: absolute;
+            width: 3px;
+            height: 30px;
+            background: #000;
+            border-radius: 2px;
+            transition: background-color 0.3s;
+        }
+        /* Mode-based color coding */
+        .tally-mark.mode-default { background: #000; }
+        .tally-mark.mode-misere { background: #d9534f; } /* Reddish */
+        .tally-mark.mode-4x4 { background: #0275d8; }     /* Blue */
+        .tally-mark.mode-3d { background: #5cb85c; }      /* Green */
+        .tally-mark.mode-4x4x4 { background: #5bc0de; }   /* Cyan/Purple-ish */
+
+        .tally-mark:nth-child(1) { left: 5px; transform: rotate(2deg); }
+        .tally-mark:nth-child(2) { left: 13px; transform: rotate(-1deg); }
+        .tally-mark:nth-child(3) { left: 21px; transform: rotate(1.5deg); }
+        .tally-mark:nth-child(4) { left: 29px; transform: rotate(-2.5deg); }
+        .tally-mark.diagonal {
+            height: 38px;
+            width: 3px;
+            transform: rotate(-75deg);
+            left: 17px;
+            top: -2px;
+        }
+        .layer-container {
+            display: flex;
+            gap: 20px;
+            transition: transform 0.5s;
+            transform-style: preserve-3d;
+        }
+        .layer-container.mode-3d {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: block;
+        }
+        .layer-container.mode-3d .layer-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .layer-container.mode-3d #wrapper-0 { transform: translateZ(60px); }
+        .layer-container.mode-3d #wrapper-1 { transform: translateZ(0); }
+        .layer-container.mode-3d #wrapper-2 { transform: translateZ(-60px); }
+        .layer-container.mode-3d #wrapper-3 { transform: translateZ(-120px); }
+
+        .layer-container.mode-4x4x4 {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            display: block;
+        }
+        .layer-container.mode-4x4x4 .layer-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .layer-container.mode-4x4x4 #wrapper-0 { transform: translateZ(90px); }
+        .layer-container.mode-4x4x4 #wrapper-1 { transform: translateZ(30px); }
+        .layer-container.mode-4x4x4 #wrapper-2 { transform: translateZ(-30px); }
+        .layer-container.mode-4x4x4 #wrapper-3 { transform: translateZ(-90px); }
+
+        .layer {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            grid-template-rows: repeat(3, 60px);
+            gap: 5px;
+            background-color: #333;
+            border: 3px solid #333;
+        }
+        .layer.size-4 {
+            grid-template-columns: repeat(4, 60px);
+            grid-template-rows: repeat(4, 60px);
+        }
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .cell:hover {
+            background-color: #eee;
+        }
+        .cell.winning-cell {
+            color: #d9534f;
+            position: relative;
+        }
+        .cell.winning-cell::after {
+            content: '';
+            position: absolute;
+            background-color: #d9534f;
+            z-index: 10;
+        }
+        /* Horizontal line */
+        .cell.winning-cell.win-horizontal::after {
+            width: 100%;
+            height: 4px;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+        /* Vertical line */
+        .cell.winning-cell.win-vertical::after {
+            width: 4px;
+            height: 100%;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        /* Diagonal line (top-left to bottom-right) */
+        .cell.winning-cell.win-diagonal-1::after {
+            width: 140%;
+            height: 4px;
+            top: 50%;
+            left: -20%;
+            transform: translateY(-50%) rotate(45deg);
+        }
+        /* Diagonal line (top-right to bottom-left) */
+        .cell.winning-cell.win-diagonal-2::after {
+            width: 140%;
+            height: 4px;
+            top: 50%;
+            left: -20%;
+            transform: translateY(-50%) rotate(-45deg);
+        }
+        /* 3D and other wins - just a generic highlight if it doesn't fit the above */
+        .cell.winning-cell.win-generic::after {
+            width: 80%;
+            height: 80%;
+            border: 4px solid #d9534f;
+            border-radius: 50%;
+            top: 10%;
+            left: 10%;
+        }
+
+        #hard-mode-container {
+            position: fixed;
+            font-size: 0.5rem;
+            color: rgba(0, 0, 0, 0.05);
+            padding: 5px;
+            z-index: 2000;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.5s;
+        }
+        #hard-mode-container input {
+            opacity: 0.1;
+            width: 8px;
+            height: 8px;
+        }
+        body.hard-mode-active #hard-mode-container {
+            color: rgba(139, 0, 0, 0.1);
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .button-container {
+            height: 50px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        #message-overlay {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            z-index: 3000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        body.hard-mode-active #message-overlay {
+            background: rgba(139, 0, 0, 0.9);
+            color: #000;
+            font-family: serif;
+            font-weight: bold;
+            box-shadow: 0 0 20px #8b0000;
+        }
+    </style>
+</head>
+<body>
+    <div id="message-overlay"></div>
+    <h1 id="game-title">Tic-Tac-Toe</h1>
+    <div id="game-container">
+        <div class="score-wrapper">
+            <div id="player-label" class="score-header">Player</div>
+            <div id="score-player" class="score-container"></div>
+        </div>
+        <div id="cube" class="layer-container">
+            <div id="wrapper-0" class="layer-wrapper">
+                <div class="layer" id="layer-0">
+                    <div class="cell" data-index="0"></div>
+                    <div class="cell" data-index="1"></div>
+                    <div class="cell" data-index="2"></div>
+                    <div class="cell" data-index="3"></div>
+                    <div class="cell" data-index="4"></div>
+                    <div class="cell" data-index="5"></div>
+                    <div class="cell" data-index="6"></div>
+                    <div class="cell" data-index="7"></div>
+                    <div class="cell" data-index="8"></div>
+                </div>
+            </div>
+            <div id="wrapper-1" class="layer-wrapper">
+                <div class="layer" id="layer-1">
+                    <div class="cell" data-index="9"></div>
+                    <div class="cell" data-index="10"></div>
+                    <div class="cell" data-index="11"></div>
+                    <div class="cell" data-index="12"></div>
+                    <div class="cell" data-index="13"></div>
+                    <div class="cell" data-index="14"></div>
+                    <div class="cell" data-index="15"></div>
+                    <div class="cell" data-index="16"></div>
+                    <div class="cell" data-index="17"></div>
+                </div>
+            </div>
+            <div id="wrapper-2" class="layer-wrapper">
+                <div class="layer" id="layer-2">
+                    <div class="cell" data-index="18"></div>
+                    <div class="cell" data-index="19"></div>
+                    <div class="cell" data-index="20"></div>
+                    <div class="cell" data-index="21"></div>
+                    <div class="cell" data-index="22"></div>
+                    <div class="cell" data-index="23"></div>
+                    <div class="cell" data-index="24"></div>
+                    <div class="cell" data-index="25"></div>
+                    <div class="cell" data-index="26"></div>
+                </div>
+            </div>
+            <div id="wrapper-3" class="layer-wrapper" style="display: none;">
+                <div class="layer" id="layer-3">
+                    <!-- Cells will be added dynamically or pre-populated -->
+                </div>
+            </div>
+        </div>
+        <div class="score-wrapper">
+            <div class="score-header">Computer</div>
+            <div id="score-computer" class="score-container"></div>
+        </div>
+    </div>
+    <div id="controls-3d" style="display: none; margin-top: 10px;">
+        <button id="rotate-up">↑</button>
+        <div>
+            <button id="rotate-left">←</button>
+            <button id="rotate-down">↓</button>
+            <button id="rotate-right">→</button>
+        </div>
+    </div>
+    <div id="status">Player X's turn</div>
+    <div style="margin-top: 10px;">
+        <label id="misere-container" style="display: none;">
+            <input type="checkbox" id="misere-toggle"> Misère Mode
+        </label>
+        <label id="mode-4x4-container" style="display: none; margin-left: 15px;">
+            <input type="checkbox" id="mode-4x4-toggle"> 4x4 Mode
+        </label>
+        <label id="mode-3d-container" style="display: none; margin-left: 15px;">
+            <input type="checkbox" id="mode-3d-toggle"> 3D Mode
+        </label>
+        <label id="mode-4x4x4-container" style="display: none; margin-left: 15px;">
+            <input type="checkbox" id="mode-4x4x4-toggle"> 4x4x4 Mode
+        </label>
+        <label id="hard-mode-container">
+            <input type="checkbox" id="hard-mode-toggle"> Hard Mode
+        </label>
+    </div>
+    <div class="button-container">
+        <button id="reset" style="visibility: hidden;">Reset Game</button>
+        <button id="reset-scores" style="background-color: #ffcccc;">Reset All Scores</button>
+    </div>
+
+    <script src="dist/index.js"></script>
+</body>
+</html>
