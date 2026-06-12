@@ -12,14 +12,14 @@ let flowerLossCount = parseInt(localStorage.getItem('flower_loss_count') || '0')
 let rotationX = -20;
 let rotationY = -20;
 
-let wins = {
+const wins = {
     'default': parseInt(localStorage.getItem('wins_default') || '0'),
     'misere': parseInt(localStorage.getItem('wins_misere') || '0'),
     '3d': parseInt(localStorage.getItem('wins_3d') || '0'),
     '4x4': parseInt(localStorage.getItem('wins_4x4') || '0')
 };
 
-let gameScores: { [key: string]: { [mode: string]: number } } = {
+const gameScores: { [key: string]: { [mode: string]: number } } = {
     'X': JSON.parse(localStorage.getItem('score_X_v2') || '{}'),
     'O': JSON.parse(localStorage.getItem('score_O_v2') || '{}')
 };
@@ -111,19 +111,19 @@ function generateWinningConditions4x4x4() {
     // Rows within layers
     for (let l = 0; l < size; l++) {
         for (let r = 0; r < size; r++) {
-            winningConditions4x4x4.push([l*16 + r*4 + 0, l*16 + r*4 + 1, l*16 + r*4 + 2, l*16 + r*4 + 3]);
+            winningConditions4x4x4.push([l * 16 + r * 4, l * 16 + r * 4 + 1, l * 16 + r * 4 + 2, l * 16 + r * 4 + 3]);
         }
     }
     // Columns within layers
     for (let l = 0; l < size; l++) {
         for (let c = 0; c < size; c++) {
-            winningConditions4x4x4.push([l*16 + 0*4 + c, l*16 + 1*4 + c, l*16 + 2*4 + c, l*16 + 3*4 + c]);
+            winningConditions4x4x4.push([l * 16 + c, l * 16 + 4 + c, l * 16 + 8 + c, l * 16 + 12 + c]);
         }
     }
     // Diagonals within layers
     for (let l = 0; l < size; l++) {
-        winningConditions4x4x4.push([l*16 + 0, l*16 + 5, l*16 + 10, l*16 + 15]);
-        winningConditions4x4x4.push([l*16 + 3, l*16 + 6, l*16 + 9, l*16 + 12]);
+        winningConditions4x4x4.push([l * 16, l * 16 + 5, l * 16 + 10, l * 16 + 15]);
+        winningConditions4x4x4.push([l * 16 + 3, l * 16 + 6, l * 16 + 9, l * 16 + 12]);
     }
     // Vertical through layers
     for (let i = 0; i < 16; i++) {
@@ -131,19 +131,19 @@ function generateWinningConditions4x4x4() {
     }
     // Cross-layer rows
     for (let r = 0; r < size; r++) {
-        winningConditions4x4x4.push([r*4 + 0, 16 + r*4 + 1, 32 + r*4 + 2, 48 + r*4 + 3]);
-        winningConditions4x4x4.push([r*4 + 3, 16 + r*4 + 2, 32 + r*4 + 1, 48 + r*4 + 0]);
+        winningConditions4x4x4.push([r * 4, 16 + r * 4 + 1, 32 + r * 4 + 2, 48 + r * 4 + 3]);
+        winningConditions4x4x4.push([r * 4 + 3, 16 + r * 4 + 2, 32 + r * 4 + 1, 48 + r * 4]);
     }
     // Cross-layer columns
     for (let c = 0; c < size; c++) {
-        winningConditions4x4x4.push([0*4 + c, 16 + 1*4 + c, 32 + 2*4 + c, 48 + 3*4 + c]);
-        winningConditions4x4x4.push([3*4 + c, 16 + 2*4 + c, 32 + 1*4 + c, 48 + 0*4 + c]);
+        winningConditions4x4x4.push([c, 20 + c, 40 + c, 60 + c]);
+        winningConditions4x4x4.push([12 + c, 24 + c, 36 + c, 48 + c]);
     }
     // Space Diagonals
-    winningConditions4x4x4.push([0, 16+5, 32+10, 48+15]);
-    winningConditions4x4x4.push([3, 16+6, 32+9, 48+12]);
-    winningConditions4x4x4.push([12, 16+9, 32+6, 48+3]);
-    winningConditions4x4x4.push([15, 16+10, 32+5, 48+0]);
+    winningConditions4x4x4.push([0, 21, 42, 63]);
+    winningConditions4x4x4.push([3, 22, 41, 60]);
+    winningConditions4x4x4.push([12, 25, 38, 51]);
+    winningConditions4x4x4.push([15, 26, 37, 48]);
 }
 generateWinningConditions4x4x4();
 
@@ -281,7 +281,7 @@ function getBestMove(availableIndices: number[]): number {
 function checkWin(currentBoard: (string | null)[], conditions: number[][]): boolean {
     for (let i = 0; i < conditions.length; i++) {
         const winCondition = conditions[i];
-        let values = winCondition.map(idx => currentBoard[idx]);
+        const values = winCondition.map(idx => currentBoard[idx]);
         if (values.every(v => v !== null && v === values[0])) {
             return true;
         }
@@ -336,21 +336,17 @@ function handleCellPlayed(clickedCell: HTMLElement, clickedCellIndex: number) {
 function handleResultValidation() {
     let winningLine: number[] | null = null;
     let currentWinningConditions = winningConditions2D;
-    let requiredToWin = 3;
-
     if (is4x4x4Mode) {
         currentWinningConditions = winningConditions4x4x4;
-        requiredToWin = 4;
     } else if (is4x4Mode) {
         currentWinningConditions = winningConditions4x4;
-        requiredToWin = 4;
     } else if (is3DMode) {
         currentWinningConditions = winningConditions3D;
     }
 
     for (let i = 0; i < currentWinningConditions.length; i++) {
         const winCondition = currentWinningConditions[i];
-        let values = winCondition.map(idx => board[idx]);
+        const values = winCondition.map(idx => board[idx]);
         
         if (values.every(v => v !== null && v === values[0])) {
             winningLine = winCondition;
@@ -413,7 +409,7 @@ function handleResultValidation() {
         return;
     }
 
-    let roundDraw = !board.includes(null);
+    const roundDraw = !board.includes(null);
     if (roundDraw) {
         statusDisplay.innerText = "Game ended in a draw!";
         gameActive = false;
@@ -425,12 +421,11 @@ function handleResultValidation() {
 }
 
 function recordWin() {
-    let currentMode = 'default';
-    if (is4x4x4Mode) currentMode = '4x4x4';
-    else if (is4x4Mode) currentMode = '4x4';
-    else if (is3DMode) currentMode = '3d';
-    else if (isMisereMode) currentMode = 'misere';
-    else currentMode = 'default';
+    const currentMode = is4x4x4Mode ? '4x4x4'
+        : is4x4Mode ? '4x4'
+            : is3DMode ? '3d'
+                : isMisereMode ? 'misere'
+                    : 'default';
 
     if (currentMode !== '4x4x4') {
         wins[currentMode as keyof typeof wins]++;
@@ -440,12 +435,11 @@ function recordWin() {
 }
 
 function updateScores(winner: 'X' | 'O') {
-    let currentMode = 'default';
-    if (is4x4x4Mode) currentMode = '4x4x4';
-    else if (is4x4Mode) currentMode = '4x4';
-    else if (is3DMode) currentMode = '3d';
-    else if (isMisereMode) currentMode = 'misere';
-    else currentMode = 'default';
+    const currentMode = is4x4x4Mode ? '4x4x4'
+        : is4x4Mode ? '4x4'
+            : is3DMode ? '3d'
+                : isMisereMode ? 'misere'
+                    : 'default';
 
     if (!gameScores[winner][currentMode]) {
         gameScores[winner][currentMode] = 0;
@@ -575,8 +569,8 @@ function handleRestartGame() {
     });
     resetButton.style.visibility = 'hidden';
     resetButton.innerText = "Reset Game";
-    is4x4x4Mode = mode4x4x4Toggle.checked;
-    is4x4Mode = mode4x4Toggle.checked;
+    is4x4x4Mode = mode4x4x4Toggle.checked || (mode4x4Toggle.checked && mode3DToggle.checked);
+    is4x4Mode = mode4x4Toggle.checked && !is4x4x4Mode;
     is3DMode = mode3DToggle.checked || is4x4x4Mode;
     isMisereMode = misereToggle.checked;
     isHardMode = hardModeToggle.checked;
@@ -636,6 +630,9 @@ misereToggle.addEventListener('change', () => {
 });
 
 mode3DToggle.addEventListener('change', () => {
+    if (mode3DToggle.checked && mode4x4Toggle.checked) {
+        mode4x4x4Toggle.checked = true;
+    }
     if (board.every(cell => cell === null)) {
         handleRestartGame();
     } else {
@@ -648,6 +645,9 @@ mode3DToggle.addEventListener('change', () => {
 });
 
 mode4x4Toggle.addEventListener('change', () => {
+    if (mode3DToggle.checked && mode4x4Toggle.checked) {
+        mode4x4x4Toggle.checked = true;
+    }
     if (board.every(cell => cell === null)) {
         handleRestartGame();
     } else {
@@ -660,6 +660,10 @@ mode4x4Toggle.addEventListener('change', () => {
 });
 
 mode4x4x4Toggle.addEventListener('change', () => {
+    if (mode4x4x4Toggle.checked) {
+        mode4x4Toggle.checked = true;
+        mode3DToggle.checked = true;
+    }
     if (board.every(cell => cell === null)) {
         handleRestartGame();
     } else {
@@ -702,8 +706,9 @@ function updateHardModeTheme() {
     if (useMonsterPieces) {
         cells.forEach((cell, idx) => {
             if (board[idx] !== null) {
-                const p = board[idx] === 'X' ? (isHardMode ? '👾' : '🌸') : (isHardMode ? '👻' : '🌼');
-                (cell as HTMLElement).innerText = p;
+                (cell as HTMLElement).innerText = board[idx] === 'X'
+                    ? (isHardMode ? '👾' : '🌸')
+                    : (isHardMode ? '👻' : '🌼');
             }
         });
     }

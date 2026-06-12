@@ -34,6 +34,25 @@ To compile the TypeScript code to JavaScript:
 npm run build
 ```
 
+### Pre-commit Linting
+
+This project runs lint checks before each commit using `husky` + `lint-staged`.
+
+- On commit, staged `*.ts` files are linted automatically.
+- Fix lint issues before committing if the hook blocks the commit.
+
+You can run linting manually:
+
+```bash
+npm run lint
+```
+
+Auto-fix lint issues where possible:
+
+```bash
+npm run lint:fix
+```
+
 ## License
 
 MIT
