@@ -1028,19 +1028,24 @@ function renderTree() {
     createFruitElement(mainFoliage);
     trunk.appendChild(mainFoliage);
     // Branches
-    createBranch('tree-branch left', '120px', '28px');
-    createBranch('tree-branch right', '250px', '32px');
-    createBranch('tree-branch left', '390px', '24px');
-    createBranch('tree-branch right', '530px', '34px');
+    createBranch('tree-branch left', '113px', '21px');
+    createBranch('tree-branch right', '195px', '24px');
+    createBranch('tree-branch left', '278px', '18px');
+    createBranch('tree-branch right', '360px', '26px');
     treeElement.appendChild(trunk);
     // Position to left or right of scoreboard
     const side = Math.random() > 0.5 ? 'left' : 'right';
-    if (side === 'left') {
-        treeElement.style.left = '5vw';
-    }
-    else {
-        treeElement.style.right = '5vw';
-    }
+    const treeLeftOverhangPx = 80;
+    const treeRightOverhangPx = 285;
+    const minTrunkLeftPx = treeLeftOverhangPx;
+    const maxTrunkLeftPx = window.innerWidth - treeRightOverhangPx;
+    const targetTrunkLeftPx = side === 'left'
+        ? window.innerWidth * 0.08
+        : (window.innerWidth * 0.92) - 45;
+    const clampedTrunkLeftPx = maxTrunkLeftPx < minTrunkLeftPx
+        ? Math.max(0, (window.innerWidth - 45) / 2)
+        : Math.min(maxTrunkLeftPx, Math.max(minTrunkLeftPx, targetTrunkLeftPx));
+    treeElement.style.left = `${clampedTrunkLeftPx}px`;
     document.body.appendChild(treeElement);
     updateMoneyRainState();
     // Trigger growth

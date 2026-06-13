@@ -185,7 +185,7 @@
             opacity: 1;
         }
         .tree-trunk {
-            width: 60px;
+            width: 45px;
             background: #4e342e;
             height: 0;
             transition: height 5s ease-out;
@@ -196,7 +196,7 @@
         .tree-branch {
             position: absolute;
             background: #4e342e;
-            height: 20px;
+            height: 15px;
             width: 0;
             transition: width 5s ease-out;
             transform-origin: left center;
@@ -222,15 +222,20 @@
             position: absolute;
         }
         .tree.growing .tree-trunk {
-            height: 600px;
+            height: 450px;
         }
         .tree.growing .tree-branch {
-            width: 160px;
+            width: 120px;
         }
         .tree.growing .tree-foliage {
-            width: 240px;
-            height: 240px;
-            font-size: 5rem;
+            width: 180px;
+            height: 180px;
+            font-size: 3.75rem;
+        }
+        .tree.growing .tree-branch .tree-foliage {
+            width: 128px;
+            height: 128px;
+            font-size: 2.85rem;
         }
         .tree-foliage span {
             display: inline-block;
@@ -261,17 +266,17 @@
             box-shadow: inset -10px -10px 20px rgba(0,0,0,0.2);
         }
         .tree-foliage.main {
-            top: -120px;
-            left: -105px;
+            top: -90px;
+            left: -79px;
         }
         .tree-branch.left .tree-foliage {
-            top: -110px;
-            right: -120px;
+            top: -83px;
+            right: -90px;
             border-radius: 60% 40% 50% 50% / 40% 50% 60% 50%;
         }
         .tree-branch.right .tree-foliage {
-            top: -110px;
-            right: -120px;
+            top: -83px;
+            left: 90px;
             border-radius: 50% 50% 40% 60% / 50% 60% 40% 50%;
         }
         .tree.breezy {
