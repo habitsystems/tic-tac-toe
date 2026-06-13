@@ -73,6 +73,8 @@ let isHardMode = storageGet('hard_mode', 'false') === 'true';
 let hardModeWins = parseInt(storageGet('hard_mode_wins', '0'));
 let useMonsterPieces = storageGet('use_monster_pieces', 'false') === 'true';
 let flowerLossCount = parseInt(storageGet('flower_loss_count', '0'));
+let lastPlayerOutcome = null;
+let consecutivePlayerOutcomeCount = 0;
 let rotationX = -20;
 let rotationY = -20;
 const wins = {
@@ -369,6 +371,19 @@ function handleCellPlayed(clickedCell, clickedCellIndex) {
     resetButton.style.visibility = 'visible';
 }
 function handleResultValidation() {
+    const updateOutcomeStreak = (outcome) => {
+        if (lastPlayerOutcome === outcome) {
+            consecutivePlayerOutcomeCount++;
+        }
+        else {
+            lastPlayerOutcome = outcome;
+            consecutivePlayerOutcomeCount = 1;
+        }
+        const againSuffix = consecutivePlayerOutcomeCount > 1 ? ' again' : '';
+        return outcome === 'win'
+            ? `You won${againSuffix}!`
+            : `You lost${againSuffix}!`;
+    };
     let winningLine = null;
     let currentWinningConditions = winningConditions2D;
     if (is4x4x4Mode) {
@@ -392,6 +407,8 @@ function handleResultValidation() {
         highlightWinningLine(winningLine);
         if (isMisereMode) {
             statusDisplay.innerText = `Player ${currentPlayer} has lost (Misère)!`;
+            lastPlayerOutcome = null;
+            consecutivePlayerOutcomeCount = 0;
             if (currentPlayer === 'O') {
                 recordWin();
                 updateScores('X');
@@ -401,7 +418,7 @@ function handleResultValidation() {
             }
         }
         else {
-            statusDisplay.innerText = `Player ${currentPlayer} has won!`;
+            statusDisplay.innerText = updateOutcomeStreak(currentPlayer === 'X' ? 'win' : 'loss');
             if (currentPlayer === 'X') {
                 recordWin();
                 updateScores('X');
@@ -448,6 +465,8 @@ function handleResultValidation() {
     const roundDraw = !board.includes(null);
     if (roundDraw) {
         statusDisplay.innerText = "Game ended in a draw!";
+        lastPlayerOutcome = null;
+        consecutivePlayerOutcomeCount = 0;
         gameActive = false;
         resetButton.innerText = "Play Again";
         return;

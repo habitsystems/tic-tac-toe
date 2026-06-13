@@ -83,6 +83,8 @@ let isHardMode = storageGet('hard_mode', 'false') === 'true';
 let hardModeWins = parseInt(storageGet('hard_mode_wins', '0'));
 let useMonsterPieces = storageGet('use_monster_pieces', 'false') === 'true';
 let flowerLossCount = parseInt(storageGet('flower_loss_count', '0'));
+let lastPlayerOutcome: 'win' | 'loss' | null = null;
+let consecutivePlayerOutcomeCount = 0;
 let rotationX = -20;
 let rotationY = -20;
 
@@ -410,6 +412,40 @@ function handleCellPlayed(clickedCell: HTMLElement, clickedCellIndex: number) {
 }
 
 function handleResultValidation() {
+    const encouragingWinPhrases = [
+        ' Nice going, champ!',
+        ' You are on fire!',
+        ' Unstoppable streak!',
+        ' Incredible run!',
+        ' Keep it up, legend!'
+    ];
+    const encouragingLossPhrases = [
+        ' You have got this.',
+        ' Shake it off, you will get the next one.',
+        ' Tough round, but you are still in it.',
+        ' Keep going, comebacks are the best.',
+        ' Hang in there, better turns are coming.'
+    ];
+    const getRandomPhrase = (phrases: string[]) => {
+        return phrases[Math.floor(Math.random() * phrases.length)];
+    };
+
+    const updateOutcomeStreak = (outcome: 'win' | 'loss') => {
+        if (lastPlayerOutcome === outcome) {
+            consecutivePlayerOutcomeCount++;
+        } else {
+            lastPlayerOutcome = outcome;
+            consecutivePlayerOutcomeCount = 1;
+        }
+        const againSuffix = consecutivePlayerOutcomeCount > 1 ? ' again' : '';
+        const streakPhrase = consecutivePlayerOutcomeCount >= 5
+            ? getRandomPhrase(outcome === 'win' ? encouragingWinPhrases : encouragingLossPhrases)
+            : '';
+        return outcome === 'win'
+            ? `You won${againSuffix}!${streakPhrase}`
+            : `You lost${againSuffix}!${streakPhrase}`;
+    };
+
     let winningLine: number[] | null = null;
     let currentWinningConditions = winningConditions2D;
     if (is4x4x4Mode) {
@@ -434,6 +470,8 @@ function handleResultValidation() {
         highlightWinningLine(winningLine);
         if (isMisereMode) {
             statusDisplay.innerText = `Player ${currentPlayer} has lost (Misère)!`;
+            lastPlayerOutcome = null;
+            consecutivePlayerOutcomeCount = 0;
             if (currentPlayer === 'O') {
                 recordWin();
                 updateScores('X');
@@ -441,7 +479,7 @@ function handleResultValidation() {
                 updateScores('O');
             }
         } else {
-            statusDisplay.innerText = `Player ${currentPlayer} has won!`;
+            statusDisplay.innerText = updateOutcomeStreak(currentPlayer === 'X' ? 'win' : 'loss');
             if (currentPlayer === 'X') {
                 recordWin();
                 updateScores('X');
@@ -488,6 +526,8 @@ function handleResultValidation() {
     const roundDraw = !board.includes(null);
     if (roundDraw) {
         statusDisplay.innerText = "Game ended in a draw!";
+        lastPlayerOutcome = null;
+        consecutivePlayerOutcomeCount = 0;
         gameActive = false;
         resetButton.innerText = "Play Again";
         return;
