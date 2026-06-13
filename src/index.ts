@@ -127,6 +127,8 @@ let inactivityTimer: number | null = null;
 let treeTimer: number | null = null;
 let snailElement: HTMLElement | null = null;
 let treeElement: HTMLElement | null = null;
+let moneyRainInterval: number | null = null;
+const maxMoneyPile = 160;
 
 // 2D Winning Conditions for 3x3 grid
 const winningConditions2D = [
@@ -1006,9 +1008,75 @@ function renderTree() {
     const fruits = ['🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍒', '🍑', '🍍', '🥭', '🥝', '🍅', '🍆', '🌽', '🥕', '🥔', '🥦', '🥬', '🥒', '🥑'];
     const getRandomFruit = () => fruits[Math.floor(Math.random() * fruits.length)];
 
+    const areAllTreeFruitsMatching = () => {
+        const fruitElements = treeElement?.querySelectorAll('.tree-foliage span');
+        if (!fruitElements || fruitElements.length < 2) return false;
+
+        const firstFruit = (fruitElements[0] as HTMLElement).innerText;
+        if (!firstFruit) return false;
+
+        return Array.from(fruitElements).every((fruitEl) => {
+            return (fruitEl as HTMLElement).innerText === firstFruit;
+        });
+    };
+
+    const stopMoneyRain = () => {
+        if (moneyRainInterval !== null) {
+            clearInterval(moneyRainInterval);
+            moneyRainInterval = null;
+        }
+    };
+
+    const spawnMoneyDrop = () => {
+        if (!document.body.classList.contains('meadow-active')) {
+            stopMoneyRain();
+            return;
+        }
+
+        const moneyPieces = document.querySelectorAll('.money-drop');
+        if (moneyPieces.length >= maxMoneyPile) return;
+
+        const money = document.createElement('div');
+        money.className = 'money-drop';
+        money.innerText = Math.random() > 0.4 ? '💸' : '💵';
+        money.style.left = `${Math.random() * 100}vw`;
+        money.style.setProperty('--fall-duration', `${(Math.random() * 1.8 + 1.8).toFixed(2)}s`);
+        money.style.setProperty('--money-drift', `${Math.round((Math.random() - 0.5) * 40)}px`);
+        money.style.setProperty('--money-ground-offset', `${Math.round(Math.random() * 40 + 65)}px`);
+
+        money.addEventListener('animationend', () => {
+            money.classList.add('piled');
+            money.style.setProperty('--pile-left', `${Math.min(98, Math.max(2, parseFloat(money.style.left) + (Math.random() - 0.5) * 2))}vw`);
+            money.style.setProperty('--pile-bottom', `${Math.round(Math.random() * 38)}px`);
+            money.style.setProperty('--pile-tilt', `${Math.round((Math.random() - 0.5) * 24)}deg`);
+        }, { once: true });
+
+        document.body.appendChild(money);
+    };
+
+    const startMoneyRain = () => {
+        if (moneyRainInterval !== null) return;
+        moneyRainInterval = window.setInterval(() => {
+            if (!areAllTreeFruitsMatching()) {
+                stopMoneyRain();
+                return;
+            }
+            spawnMoneyDrop();
+        }, 220);
+    };
+
+    const updateMoneyRainState = () => {
+        if (areAllTreeFruitsMatching()) {
+            startMoneyRain();
+        } else {
+            stopMoneyRain();
+        }
+    };
+
     const createFruitElement = (parent: HTMLElement) => {
         const fruit = document.createElement('span');
         fruit.innerText = getRandomFruit();
+        updateMoneyRainState();
         fruit.addEventListener('click', (e) => {
             e.stopPropagation();
             if (fruit.classList.contains('eating')) return;
@@ -1020,6 +1088,7 @@ function renderTree() {
                 fruit.innerText = getRandomFruit();
                 fruit.classList.remove('eating');
                 fruit.classList.add('growing-fruit');
+                updateMoneyRainState();
                 setTimeout(() => {
                     fruit.classList.remove('growing-fruit');
                 }, 2000);
@@ -1049,10 +1118,10 @@ function renderTree() {
     trunk.appendChild(mainFoliage);
 
     // Branches
-    createBranch('tree-branch left', '200px', '30px');
-    createBranch('tree-branch right', '360px', '30px');
-    createBranch('tree-branch left', '300px', '30px');
-    createBranch('tree-branch right', '120px', '30px');
+    createBranch('tree-branch left', '120px', '28px');
+    createBranch('tree-branch right', '250px', '32px');
+    createBranch('tree-branch left', '390px', '24px');
+    createBranch('tree-branch right', '530px', '34px');
 
     treeElement.appendChild(trunk);
     
@@ -1065,6 +1134,7 @@ function renderTree() {
     }
     
     document.body.appendChild(treeElement);
+    updateMoneyRainState();
     
     // Trigger growth
     setTimeout(() => {
@@ -1098,6 +1168,11 @@ function stopInactivityTimer() {
         treeElement.remove();
         treeElement = null;
     }
+    if (moneyRainInterval !== null) {
+        clearInterval(moneyRainInterval);
+        moneyRainInterval = null;
+    }
+    document.querySelectorAll('.money-drop').forEach((money) => money.remove());
 }
 
 function resetInactivityTimer() {

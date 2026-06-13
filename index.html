@@ -277,6 +277,39 @@
         .tree.breezy {
             animation: tree-breeze 4s infinite ease-in-out;
         }
+        .money-drop {
+            --fall-duration: 2.2s;
+            --money-drift: 0px;
+            --money-ground-offset: 70px;
+            position: fixed;
+            top: -8vh;
+            font-size: 2rem;
+            pointer-events: none;
+            z-index: 0;
+            animation: money-fall var(--fall-duration, 2.2s) linear forwards;
+            will-change: transform;
+        }
+        .money-drop.piled {
+            --pile-bottom: 8px;
+            --pile-left: 50vw;
+            --pile-tilt: 0deg;
+            animation: none;
+            top: auto;
+            bottom: var(--pile-bottom, 8px);
+            left: var(--pile-left, 50vw);
+            transform: rotate(var(--pile-tilt, 0deg));
+            opacity: 1;
+        }
+        @keyframes money-fall {
+            0% {
+                transform: translate3d(0, 0, 0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate3d(var(--money-drift, 0px), calc(100vh - var(--money-ground-offset, 70px)), 0) rotate(16deg);
+                opacity: 1;
+            }
+        }
         @keyframes tree-breeze {
             0%, 100% { transform: rotate(-2deg); }
             50% { transform: rotate(2deg); }
@@ -289,6 +322,9 @@
             opacity: 0.7;
         }
         body:not(.meadow-active) .tree {
+            opacity: 0;
+        }
+        body:not(.meadow-active) .money-drop {
             opacity: 0;
         }
         /* Double exposure effect simulation */
