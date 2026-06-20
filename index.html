@@ -6,6 +6,43 @@
     <title>Exes and Os</title>
     <!--suppress CssUnusedSymbol -->
     <style>
+        :root {
+            --sun-left: 20vw;
+            --sun-top: 20vh;
+            --sun-opacity: 0.86;
+            --star-size: 2px;
+            --star-left: 50vw;
+            --star-top: 16vh;
+            --star-opacity: 0.8;
+            --star-twinkle: 4s;
+            --moon-left: 18vw;
+            --moon-top: 12vh;
+            --moon-rotation: 0deg;
+            --planet-left: 50vw;
+            --planet-top: 20vh;
+            --planet-size: 5px;
+            --planet-opacity: 0.9;
+            --planet-glow: rgba(255,255,255,0.6);
+            --weather-left: 50vw;
+            --weather-speed: 1s;
+            --weather-delay: 0s;
+            --rain-length: 32px;
+            --flake-size: 5px;
+            --snow-drift: 8vw;
+            --cloud-top: 12vh;
+            --cloud-width: 180px;
+            --cloud-height: 54px;
+            --cloud-opacity: 0.7;
+            --leaf-top: 54vh;
+            --moth-speed: 9s;
+            --moth-delay: 0s;
+            --sleeping-bee-bottom: 58px;
+            --sleeping-bee-left: 12vw;
+            --snow-pile-left: 50vw;
+            --snow-pile-bottom: 0px;
+            --snow-pile-width: 140px;
+            --snow-pile-height: 28px;
+        }
         body {
             font-family: sans-serif;
             display: flex;
@@ -20,15 +57,19 @@
             box-sizing: border-box;
         }
         body.hard-mode-active {
-            background-color: #1a1a1a;
-            color: #d9534f;
-            background-image: radial-gradient(circle, #222 1px, transparent 1px);
-            background-size: 3px 3px;
+            background-color: #140807;
+            color: #d7b46a;
+            background-image:
+                linear-gradient(90deg, rgba(92, 7, 12, 0.92) 0 8%, rgba(32, 5, 7, 0.96) 8% 14%, rgba(119, 10, 16, 0.86) 14% 22%),
+                linear-gradient(135deg, rgba(29, 49, 32, 0.72) 0 18%, transparent 18% 36%, rgba(12, 24, 17, 0.76) 36% 54%, transparent 54%),
+                radial-gradient(circle at 50% 24%, rgba(214, 176, 91, 0.14), transparent 34%),
+                linear-gradient(#160807, #060403 70%);
+            background-size: 180px 100%, 120px 120px, 100% 100%, 100% 100%;
         }
         body.hard-mode-active h1 {
-            color: #8b0000;
-            text-shadow: 2px 2px 5px #000;
-            animation: glitch 0.3s infinite alternate;
+            color: #d0a04e;
+            text-shadow: 0 2px 0 #1b0505, 0 0 18px rgba(126, 13, 19, 0.9);
+            animation: glitch 0.8s infinite alternate;
         }
         @keyframes glitch {
             0% { transform: translate(0); }
@@ -39,23 +80,29 @@
             100% { transform: translate(0); }
         }
         body.hard-mode-active .cell {
-            background-color: #2a2a2a;
-            color: #eee;
-            border-color: #444;
+            background-color: #21100d;
+            color: #f2d48b;
+            border-color: #7c1719;
+            box-shadow: inset 0 0 0 2px rgba(9, 30, 17, 0.45);
             transition: all 0.2s;
         }
         body.hard-mode-active .cell:hover {
-            background-color: #3a3a3a;
-            box-shadow: 0 0 10px #d9534f;
+            background-color: #341614;
+            box-shadow: 0 0 14px rgba(183, 28, 28, 0.85), inset 0 0 0 2px rgba(215, 180, 106, 0.35);
         }
         body.hard-mode-active .layer {
-            background-color: #000;
-            border-color: #8b0000;
+            background-color: #080403;
+            border-color: #7c1719;
         }
         body.hard-mode-active .score-container {
-            background-color: #111;
-            border-color: #8b0000;
-            color: #d9534f;
+            background-color: rgba(5, 3, 2, 0.96);
+            border: 3px solid #d7b46a;
+            color: #f7e7b3;
+            box-shadow: 0 0 0 2px rgba(28, 5, 5, 0.95), 0 0 18px rgba(215, 180, 106, 0.24), inset 0 0 24px rgba(92, 7, 12, 0.38);
+        }
+        body.hard-mode-active .score-header {
+            color: #ffe39a;
+            text-shadow: 0 2px 0 #230504, 0 0 10px rgba(255, 227, 154, 0.45);
         }
         /* Twitchy effect for random elements */
         @keyframes twitch {
@@ -71,12 +118,495 @@
         }
         /* Meadow theme for flower mode */
         body.meadow-active {
-            background-color: #e0f7fa; /* Light sky blue */
+            --meadow-sky-top: #bdefff;
+            --meadow-sky-bottom: #e8fbff;
+            --meadow-grass: #9ccc65;
+            --meadow-sun-color: rgba(255, 249, 196, 0.92);
+            --meadow-cloud-opacity: 0;
+            --meadow-text-color: #243124;
+            --meadow-text-shadow: 0 1px 0 rgba(255,255,255,0.65);
+            background-color: var(--meadow-sky-bottom);
+            color: var(--meadow-text-color);
             background-image: 
-                linear-gradient(to bottom, transparent 60%, #9ccc65 60%), /* Grass bottom */
-                radial-gradient(circle at 20% 20%, #fff9c4 10%, transparent 20%); /* Faint sun */
+                radial-gradient(ellipse at 70% 18%, rgba(255,255,255,var(--meadow-cloud-opacity)) 0 10%, transparent 24%),
+                linear-gradient(to bottom, var(--meadow-sky-top) 0%, var(--meadow-sky-bottom) 60%, var(--meadow-grass) 60%);
             overflow: hidden;
             transition: background-color 2s, background-image 2s;
+        }
+        #meadow-sky-layer,
+        #meadow-weather-layer {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+        #meadow-sky-layer {
+            z-index: 0;
+            overflow: hidden;
+            height: 60vh;
+            bottom: auto;
+        }
+        #meadow-weather-layer {
+            z-index: 0;
+            overflow: hidden;
+        }
+        body.meadow-active #meadow-sky-layer {
+            opacity: 1;
+        }
+        body.meadow-active h1,
+        body.meadow-active #game-container,
+        body.meadow-active #controls-3d,
+        body.meadow-active #status,
+        body.meadow-active .button-container,
+        body.meadow-active #debug-panel {
+            position: relative;
+            z-index: 1;
+        }
+        .meadow-sun {
+            position: absolute;
+            left: var(--sun-left, 20vw);
+            top: var(--sun-top, 20vh);
+            width: 112px;
+            height: 112px;
+            border-radius: 50%;
+            background: #fff6b2;
+            box-shadow: 0 0 48px rgba(255, 227, 137, 0.72), 0 0 120px rgba(255, 178, 91, 0.38);
+            opacity: var(--sun-opacity, 0.86);
+            transform: translate(-50%, -50%);
+        }
+        .meadow-star {
+            position: absolute;
+            width: var(--star-size, 2px);
+            height: var(--star-size, 2px);
+            left: var(--star-left);
+            top: var(--star-top);
+            border-radius: 50%;
+            background: rgba(255,255,255,var(--star-opacity,0.8));
+            box-shadow: 0 0 6px rgba(255,255,255,0.45);
+            animation: star-twinkle var(--star-twinkle, 4s) ease-in-out infinite;
+        }
+        .meadow-constellation-star {
+            width: 3px;
+            height: 3px;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 0 8px rgba(255,255,255,0.75);
+        }
+        .meadow-moon {
+            position: absolute;
+            left: var(--moon-left, 18vw);
+            top: var(--moon-top, 12vh);
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: #f4f0d2;
+            box-shadow: 0 0 24px rgba(242, 239, 205, 0.5), inset -8px -8px 12px rgba(172, 162, 119, 0.2);
+            opacity: 0.95;
+            overflow: hidden;
+            transform: translate(-50%, -50%) rotate(var(--moon-rotation, 0deg));
+        }
+        .meadow-moon::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 35% 38%, rgba(120,112,88,0.25) 0 5%, transparent 6%),
+                radial-gradient(circle at 62% 57%, rgba(120,112,88,0.22) 0 4%, transparent 5%),
+                radial-gradient(circle at 47% 70%, rgba(120,112,88,0.18) 0 3%, transparent 4%);
+            z-index: 2;
+        }
+        .meadow-moon::after {
+            content: "";
+            position: absolute;
+            top: -4px;
+            width: 76px;
+            height: 80px;
+            border-radius: 50%;
+            background: #121c3f;
+            opacity: var(--moon-shadow-opacity, 0);
+            left: var(--moon-shadow-left, 0);
+            transform: scaleX(var(--moon-shadow-scale, 1));
+            z-index: 1;
+        }
+        .meadow-moon.daylight {
+            background: rgba(247, 246, 225, 0.58);
+            box-shadow: 0 0 10px rgba(255,255,255,0.22), inset -5px -6px 10px rgba(166, 160, 133, 0.13);
+            opacity: 0.68;
+        }
+        .meadow-moon.daylight::before {
+            opacity: 0.42;
+        }
+        .meadow-moon.daylight::after {
+            background: var(--meadow-sky-top, #aeeeff);
+            opacity: var(--moon-shadow-opacity, 0);
+        }
+        .meadow-moon.phase-new {
+            background: #182141;
+            box-shadow: 0 0 12px rgba(242, 239, 205, 0.15);
+        }
+        .meadow-moon.daylight.phase-new {
+            background: rgba(235, 237, 221, 0.24);
+            box-shadow: none;
+        }
+        .meadow-moon.phase-new::after,
+        .meadow-moon.phase-full::after {
+            opacity: 0;
+        }
+        .meadow-moon.phase-waxing-crescent {
+            --moon-shadow-opacity: 0.56;
+            --moon-shadow-left: -18px;
+            --moon-shadow-scale: 1.05;
+        }
+        .meadow-moon.phase-first-quarter {
+            --moon-shadow-opacity: 0.58;
+            --moon-shadow-left: -39px;
+            --moon-shadow-scale: 0.78;
+        }
+        .meadow-moon.phase-waxing-gibbous {
+            --moon-shadow-opacity: 0.5;
+            --moon-shadow-left: -58px;
+            --moon-shadow-scale: 0.54;
+        }
+        .meadow-moon.phase-waning-gibbous {
+            --moon-shadow-opacity: 0.5;
+            --moon-shadow-left: 54px;
+            --moon-shadow-scale: 0.54;
+        }
+        .meadow-moon.phase-last-quarter {
+            --moon-shadow-opacity: 0.58;
+            --moon-shadow-left: 35px;
+            --moon-shadow-scale: 0.78;
+        }
+        .meadow-moon.phase-waning-crescent {
+            --moon-shadow-opacity: 0.56;
+            --moon-shadow-left: 14px;
+            --moon-shadow-scale: 1.05;
+        }
+        .meadow-planet {
+            position: absolute;
+            left: var(--planet-left, 50vw);
+            top: var(--planet-top, 20vh);
+            width: var(--planet-size, 5px);
+            height: var(--planet-size, 5px);
+            border-radius: 50%;
+            background: currentColor;
+            opacity: var(--planet-opacity, 0.9);
+            box-shadow: 0 0 8px var(--planet-glow, rgba(255,255,255,0.6));
+            transform: translate(-50%, -50%);
+        }
+        .meadow-planet.mercury {
+            color: #d7c6a4;
+        }
+        .meadow-planet.venus {
+            color: #fff3b0;
+            box-shadow: 0 0 13px rgba(255,243,176,0.9), 0 0 25px rgba(255,243,176,0.42);
+        }
+        .meadow-planet.mars {
+            color: #ff9a6b;
+            box-shadow: 0 0 10px rgba(255,116,77,0.78);
+        }
+        .meadow-planet.jupiter {
+            color: #ffe4b8;
+            box-shadow: 0 0 12px rgba(255,228,184,0.8);
+        }
+        .meadow-planet.saturn {
+            color: #f0d39a;
+        }
+        .weather-drop,
+        .weather-flake,
+        .weather-fog-bank,
+        .weather-cloud,
+        .weather-leaf,
+        .weather-lightning {
+            position: absolute;
+            display: none;
+        }
+        .weather-cloud {
+            z-index: 1;
+        }
+        .weather-drop,
+        .weather-flake,
+        .weather-leaf,
+        .weather-lightning {
+            z-index: 2;
+        }
+        .weather-fog-bank {
+            z-index: 3;
+        }
+        body.meadow-active.meadow-weather-rain #meadow-weather-layer,
+        body.meadow-active.meadow-weather-snow #meadow-weather-layer,
+        body.meadow-active.meadow-weather-fog #meadow-weather-layer,
+        body.meadow-active.meadow-weather-storm #meadow-weather-layer,
+        body.meadow-active.meadow-weather-cloudy #meadow-weather-layer,
+        body.meadow-active.meadow-weather-windy #meadow-weather-layer {
+            opacity: 1;
+        }
+        body.meadow-active.meadow-weather-rain .weather-drop,
+        body.meadow-active.meadow-weather-storm .weather-drop {
+            display: block;
+            top: -18vh;
+            left: var(--weather-left);
+            width: 2px;
+            height: var(--rain-length, 32px);
+            background: linear-gradient(to bottom, rgba(173,213,244,0), rgba(67,120,166,0.8));
+            transform: rotate(14deg);
+            animation: rain-fall var(--weather-speed, 0.72s) linear infinite;
+            animation-delay: var(--weather-delay);
+        }
+        body.meadow-active.meadow-weather-storm .weather-drop {
+            height: var(--rain-length, 42px);
+            background: linear-gradient(to bottom, rgba(188,219,245,0), rgba(31,63,102,0.95));
+        }
+        body.meadow-active.meadow-weather-snow .weather-flake {
+            display: block;
+            top: -10vh;
+            left: var(--weather-left);
+            width: var(--flake-size, 5px);
+            height: var(--flake-size, 5px);
+            border-radius: 50%;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 0 8px rgba(255,255,255,0.9), 0 0 2px rgba(80,120,160,0.45);
+            animation: snow-fall var(--weather-speed, 6s) linear infinite;
+            animation-delay: var(--weather-delay);
+        }
+        body.meadow-active.meadow-weather-snow .weather-flake::before,
+        body.meadow-active.meadow-weather-snow .weather-flake::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 140%;
+            height: 1px;
+            background: rgba(255,255,255,0.86);
+            transform: translate(-50%, -50%) rotate(60deg);
+        }
+        body.meadow-active.meadow-weather-snow .weather-flake::after {
+            transform: translate(-50%, -50%) rotate(-60deg);
+        }
+        .snow-pile {
+            position: fixed;
+            left: var(--snow-pile-left, 50vw);
+            bottom: var(--snow-pile-bottom, 0px);
+            width: var(--snow-pile-width, 140px);
+            height: var(--snow-pile-height, 28px);
+            border-radius: 50% 50% 18% 18%;
+            background:
+                radial-gradient(circle at 18% 42%, rgba(255,255,255,0.98) 0 18%, transparent 19%),
+                radial-gradient(circle at 46% 30%, rgba(255,255,255,0.96) 0 23%, transparent 24%),
+                radial-gradient(circle at 74% 46%, rgba(255,255,255,0.94) 0 19%, transparent 20%),
+                linear-gradient(to bottom, rgba(255,255,255,0.98), rgba(220,238,247,0.94));
+            box-shadow: 0 -2px 10px rgba(255,255,255,0.7), inset 0 -8px 12px rgba(150,178,195,0.16);
+            opacity: 0.96;
+            pointer-events: none;
+            z-index: 4;
+            transform: translateX(-50%) scaleY(0);
+            transform-origin: bottom center;
+            animation: snow-pile-grow 4s ease-out forwards;
+        }
+        .snow-clear-sign {
+            position: fixed;
+            right: 24px;
+            bottom: 34px;
+            width: 86px;
+            height: 106px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            z-index: 9;
+        }
+        .snow-clear-sign::before {
+            content: "";
+            position: absolute;
+            left: 40px;
+            bottom: 0;
+            width: 10px;
+            height: 62px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #5f3b22, #8b5a32 48%, #4a2b18);
+            box-shadow: 2px 0 0 rgba(0,0,0,0.16);
+        }
+        .snow-clear-sign-board {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 86px;
+            height: 54px;
+            border-radius: 7px;
+            background: #f6e0a6;
+            border: 4px solid #6d4729;
+            box-shadow: 0 5px 8px rgba(0,0,0,0.22), inset 0 0 0 2px rgba(255,255,255,0.32);
+            color: #3c2819;
+            font-family: Impact, "Arial Black", sans-serif;
+            font-weight: 900;
+            font-size: 42px;
+            line-height: 46px;
+            text-align: center;
+            text-shadow: 2px 2px 0 rgba(255,255,255,0.6), -1px 2px 0 rgba(109,71,41,0.24);
+            transform: rotate(-3deg);
+        }
+        .snow-clear-sign-board::before {
+            content: "";
+            position: absolute;
+            right: 8px;
+            bottom: 9px;
+            width: 32px;
+            height: 16px;
+            border-radius: 5px;
+            background: #8fd5f2;
+            border: 3px solid #315f73;
+            box-shadow: inset 0 -5px 0 rgba(49,95,115,0.25);
+        }
+        .snow-clear-sign-board::after {
+            content: "";
+            position: absolute;
+            right: -2px;
+            bottom: 8px;
+            width: 18px;
+            height: 22px;
+            border-radius: 3px 10px 10px 3px;
+            background: #d7e3e8;
+            border: 3px solid #607d8b;
+            transform: skewX(-17deg);
+        }
+        .snow-clear-sign:hover .snow-clear-sign-board {
+            transform: rotate(-1deg) translateY(-2px);
+        }
+        body.meadow-active.meadow-weather-fog .weather-fog-bank {
+            display: block;
+            left: -20vw;
+            width: 140vw;
+            height: 22vh;
+            border-radius: 50%;
+            background: rgba(234, 241, 236, 0.42);
+            filter: blur(18px);
+            animation: fog-drift var(--weather-speed, 12s) ease-in-out infinite alternate;
+            animation-delay: var(--weather-delay);
+        }
+        body.meadow-active.meadow-weather-cloudy .weather-cloud,
+        body.meadow-active.meadow-weather-rain .weather-cloud,
+        body.meadow-active.meadow-weather-storm .weather-cloud,
+        body.meadow-active.meadow-weather-snow .weather-cloud {
+            display: block;
+            top: var(--cloud-top);
+            left: -28vw;
+            width: var(--cloud-width, 180px);
+            height: var(--cloud-height, 54px);
+            border-radius: 999px;
+            background:
+                radial-gradient(circle at 25% 25%, rgba(255,255,255,0.82) 0 24%, transparent 25%),
+                radial-gradient(circle at 50% 12%, rgba(255,255,255,0.78) 0 30%, transparent 31%),
+                radial-gradient(circle at 74% 32%, rgba(255,255,255,0.72) 0 25%, transparent 26%),
+                rgba(255,255,255,0.48);
+            filter: blur(1px);
+            opacity: var(--cloud-opacity, 0.7);
+            animation: cloud-drift var(--weather-speed, 42s) linear infinite;
+            animation-delay: var(--weather-delay);
+        }
+        body.meadow-active.meadow-weather-snow .weather-cloud {
+            opacity: 0.3;
+        }
+        body.meadow-active.meadow-weather-storm .weather-cloud {
+            background:
+                radial-gradient(circle at 25% 25%, rgba(64,72,86,0.9) 0 24%, transparent 25%),
+                radial-gradient(circle at 50% 12%, rgba(48,55,70,0.92) 0 30%, transparent 31%),
+                radial-gradient(circle at 74% 32%, rgba(40,48,62,0.9) 0 25%, transparent 26%),
+                rgba(33,40,54,0.82);
+            opacity: 0.82;
+        }
+        body.meadow-active.meadow-weather-windy .weather-leaf {
+            display: block;
+            top: var(--leaf-top);
+            left: -8vw;
+            width: 14px;
+            height: 8px;
+            border-radius: 70% 0 70% 0;
+            background: #6b8f38;
+            animation: leaf-gust var(--weather-speed, 3.8s) ease-in-out infinite;
+            animation-delay: var(--weather-delay);
+        }
+        body.meadow-active.meadow-weather-storm .weather-lightning {
+            display: block;
+            top: 10vh;
+            left: var(--weather-left);
+            width: 4px;
+            height: 88px;
+            background: #fff4a8;
+            clip-path: polygon(45% 0, 100% 0, 62% 42%, 100% 42%, 28% 100%, 48% 52%, 10% 52%);
+            opacity: 0;
+            animation: lightning-flash 5.5s steps(1) infinite;
+            animation-delay: var(--weather-delay);
+            filter: drop-shadow(0 0 18px rgba(255,244,168,0.95));
+        }
+        body.meadow-active.meadow-dawn {
+            --meadow-sky-top: #ffd1a8;
+            --meadow-sky-bottom: #dff4ff;
+            --meadow-grass: #8fc764;
+            --meadow-sun-color: rgba(255, 218, 138, 0.95);
+            --meadow-cloud-opacity: 0.28;
+            --meadow-text-color: #283620;
+        }
+        body.meadow-active.meadow-day {
+            --meadow-sky-top: #aeeeff;
+            --meadow-sky-bottom: #e5fbff;
+            --meadow-grass: #9ccc65;
+            --meadow-sun-color: rgba(255, 249, 196, 0.96);
+            --meadow-cloud-opacity: 0.18;
+            --meadow-text-color: #243124;
+        }
+        body.meadow-active.meadow-dusk {
+            --meadow-sky-top: #f4a36f;
+            --meadow-sky-bottom: #9fc0de;
+            --meadow-grass: #7ea951;
+            --meadow-sun-color: rgba(255, 184, 103, 0.88);
+            --meadow-cloud-opacity: 0.32;
+            --meadow-text-color: #fff1c2;
+            --meadow-text-shadow: 0 2px 4px rgba(32,18,12,0.78), 0 0 10px rgba(255,198,125,0.25);
+        }
+        body.meadow-active.meadow-night {
+            --meadow-sky-top: #111b3d;
+            --meadow-sky-bottom: #26385f;
+            --meadow-grass: #456c38;
+            --meadow-sun-color: transparent;
+            --meadow-cloud-opacity: 0.16;
+            --meadow-text-color: #f2f6dc;
+            --meadow-text-shadow: 0 2px 4px rgba(0,0,0,0.95), 0 0 12px rgba(255,255,210,0.22);
+            color: #d8e5d0;
+            background-image:
+                radial-gradient(circle at 78% 15%, rgba(255,255,255,0.55) 0 1px, transparent 2px),
+                radial-gradient(circle at 62% 26%, rgba(255,255,255,0.45) 0 1px, transparent 2px),
+                radial-gradient(circle at 36% 12%, rgba(255,255,255,0.45) 0 1px, transparent 2px),
+                linear-gradient(to bottom, var(--meadow-sky-top) 0%, var(--meadow-sky-bottom) 60%, var(--meadow-grass) 60%);
+        }
+        body.meadow-active h1,
+        body.meadow-active #status,
+        body.meadow-active .score-header,
+        body.meadow-active label {
+            color: var(--meadow-text-color);
+            text-shadow: var(--meadow-text-shadow);
+        }
+        body.meadow-active.meadow-weather-cloudy {
+            --meadow-cloud-opacity: 0.58;
+            --meadow-sun-color: rgba(255, 249, 196, 0.52);
+        }
+        body.meadow-active.meadow-weather-rain {
+            --meadow-cloud-opacity: 0.62;
+        }
+        body.meadow-active.meadow-weather-snow {
+            --meadow-grass: #c9dfbd;
+            --meadow-cloud-opacity: 0.48;
+        }
+        body.meadow-active.meadow-weather-fog {
+            --meadow-cloud-opacity: 0.45;
+        }
+        body.meadow-active.meadow-weather-storm {
+            --meadow-sky-top: #394052;
+            --meadow-sky-bottom: #677283;
+            --meadow-cloud-opacity: 0.76;
+        }
+        body.meadow-active.meadow-weather-windy .grass-blade {
+            animation-duration: 1.2s;
         }
         body.meadow-active.meadow-wilted {
             background-color: #cfd8dc; /* Grayish sky */
@@ -109,6 +639,53 @@
             0%, 100% { transform: rotate(0deg); }
             50% { transform: rotate(10deg); }
         }
+        @keyframes meadow-rain {
+            from { transform: translate3d(0, -18vh, 0) rotate(14deg); opacity: 0; }
+            10% { opacity: 1; }
+            to { transform: translate3d(-18vw, 124vh, 0) rotate(14deg); opacity: 0.8; }
+        }
+        @keyframes meadow-snow {
+            from { transform: translate3d(0, -12vh, 0); opacity: 0; }
+            10% { opacity: 1; }
+            to { transform: translate3d(var(--snow-drift, 8vw), 116vh, 0); opacity: 0.9; }
+        }
+        @keyframes meadow-fog {
+            from { transform: translateX(-4vw); }
+            to { transform: translateX(4vw); }
+        }
+        @keyframes rain-fall {
+            from { transform: translate3d(0, -18vh, 0) rotate(14deg); opacity: 0; }
+            12% { opacity: 1; }
+            to { transform: translate3d(-18vw, 124vh, 0) rotate(14deg); opacity: 0.85; }
+        }
+        @keyframes snow-fall {
+            from { transform: translate3d(0, -10vh, 0); opacity: 0; }
+            12% { opacity: 1; }
+            to { transform: translate3d(var(--snow-drift, 9vw), 116vh, 0); opacity: 0.95; }
+        }
+        @keyframes fog-drift {
+            from { transform: translateX(-7vw); }
+            to { transform: translateX(7vw); }
+        }
+        @keyframes cloud-drift {
+            from { transform: translateX(0); }
+            to { transform: translateX(138vw); }
+        }
+        @keyframes leaf-gust {
+            0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+            12% { opacity: 1; }
+            55% { transform: translate3d(55vw, -8vh, 0) rotate(520deg); }
+            100% { transform: translate3d(112vw, 8vh, 0) rotate(980deg); opacity: 0; }
+        }
+        @keyframes lightning-flash {
+            0%, 88%, 94%, 100% { opacity: 0; }
+            89%, 91% { opacity: 1; }
+            92% { opacity: 0.25; }
+        }
+        @keyframes star-twinkle {
+            0%, 100% { transform: scale(1); opacity: var(--star-opacity, 0.8); }
+            50% { transform: scale(1.45); opacity: 0.35; }
+        }
         .bee {
             position: fixed;
             font-size: 1.2rem;
@@ -126,12 +703,12 @@
             opacity: 0;
         }
         @keyframes bee-fly {
-            0% { transform: translate(-10vw, 20vh) rotate(0deg); }
-            15% { transform: translate(15vw, 10vh) rotate(10deg); }
-            30% { transform: translate(45vw, 30vh) rotate(-10deg); }
-            45% { transform: translate(75vw, 15vh) rotate(5deg); }
-            60% { transform: translate(110vw, 25vh) rotate(0deg); }
-            100% { transform: translate(110vw, 25vh) rotate(0deg); }
+            0% { transform: translate(-10vw, 20vh) rotate(0deg) scaleX(-1); }
+            15% { transform: translate(15vw, 10vh) rotate(10deg) scaleX(-1); }
+            30% { transform: translate(45vw, 30vh) rotate(-10deg) scaleX(-1); }
+            45% { transform: translate(75vw, 15vh) rotate(5deg) scaleX(-1); }
+            60% { transform: translate(110vw, 25vh) rotate(0deg) scaleX(-1); }
+            100% { transform: translate(110vw, 25vh) rotate(0deg) scaleX(-1); }
         }
         .bee.landed, .bird.landed {
             animation: none !important;
@@ -164,13 +741,386 @@
             95% { transform: translate(110vw, 5vh) scaleX(-1); }
             100% { transform: translate(110vw, 5vh) scaleX(1); }
         }
+        .bird.nocturnal {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 8px rgba(255, 236, 162, 0.45));
+            animation-duration: 26s;
+        }
+        .moth {
+            position: fixed;
+            font-size: 1.25rem;
+            z-index: 2;
+            pointer-events: none;
+            animation: moth-flutter var(--moth-speed, 9s) ease-in-out infinite;
+            animation-delay: var(--moth-delay, 0s);
+            filter: drop-shadow(0 0 8px rgba(255, 245, 188, 0.45));
+        }
+        .sleeping-bee {
+            position: fixed;
+            bottom: var(--sleeping-bee-bottom, 58px);
+            left: var(--sleeping-bee-left, 12vw);
+            font-size: 1.05rem;
+            z-index: 2;
+            pointer-events: none;
+            filter: grayscale(0.4) brightness(0.8);
+        }
+        .sleeping-bee::after {
+            content: "z";
+            position: absolute;
+            left: 16px;
+            top: -14px;
+            color: rgba(242, 246, 220, 0.82);
+            font-weight: 700;
+            animation: sleepy-z 2.4s ease-in-out infinite;
+        }
+        .cryptid {
+            position: fixed;
+            left: -90px;
+            bottom: 33vh;
+            width: 54px;
+            height: 86px;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.42;
+            animation: cryptid-walk 32s linear forwards;
+        }
+        .raccoon {
+            position: fixed;
+            left: -120px;
+            bottom: 42px;
+            width: 94px;
+            height: 48px;
+            z-index: 2;
+            pointer-events: none;
+            animation: raccoon-scurry 22s linear infinite;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.35));
+        }
+        .raccoon-body {
+            position: absolute;
+            left: 22px;
+            bottom: 10px;
+            width: 46px;
+            height: 25px;
+            border-radius: 55% 45% 42% 48%;
+            background: linear-gradient(#8a8c84, #4f554f);
+        }
+        .raccoon-head {
+            position: absolute;
+            right: 9px;
+            bottom: 19px;
+            width: 28px;
+            height: 24px;
+            border-radius: 50%;
+            background: #7f837c;
+        }
+        .raccoon-head::before,
+        .raccoon-head::after {
+            content: "";
+            position: absolute;
+        }
+        .raccoon-head::before {
+            left: 3px;
+            top: 8px;
+            width: 20px;
+            height: 7px;
+            border-radius: 999px;
+            background: #1c211f;
+            box-shadow: inset 7px 0 0 rgba(246,246,226,0.7), inset -7px 0 0 rgba(246,246,226,0.7);
+        }
+        .raccoon-head::after {
+            right: -5px;
+            top: 12px;
+            width: 8px;
+            height: 6px;
+            border-radius: 50%;
+            background: #121615;
+        }
+        .raccoon-ear {
+            position: absolute;
+            top: -3px;
+            width: 10px;
+            height: 10px;
+            background: #565c56;
+            transform: rotate(45deg);
+        }
+        .raccoon-ear.left {
+            left: 4px;
+        }
+        .raccoon-ear.right {
+            right: 5px;
+        }
+        .raccoon-tail {
+            position: absolute;
+            left: 0;
+            bottom: 18px;
+            width: 34px;
+            height: 15px;
+            border-radius: 999px 0 0 999px;
+            background: repeating-linear-gradient(90deg, #3f4540 0 7px, #878b84 7px 14px);
+            transform-origin: right center;
+            animation: raccoon-tail 0.7s ease-in-out infinite alternate;
+        }
+        .raccoon-leg {
+            position: absolute;
+            bottom: 3px;
+            width: 9px;
+            height: 13px;
+            border-radius: 999px;
+            background: #333a35;
+            animation: raccoon-step 0.45s ease-in-out infinite;
+        }
+        .raccoon-leg.front {
+            right: 22px;
+        }
+        .raccoon-leg.back {
+            left: 34px;
+            animation-delay: 0.22s;
+        }
+        .cryptid-body {
+            position: absolute;
+            left: 18px;
+            bottom: 18px;
+            width: 22px;
+            height: 50px;
+            border-radius: 45% 45% 30% 30%;
+            background: #090d0b;
+            box-shadow: 0 0 18px rgba(0,0,0,0.5);
+        }
+        .cryptid-head {
+            position: absolute;
+            left: 14px;
+            top: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #090d0b;
+        }
+        .cryptid-leg {
+            position: absolute;
+            bottom: 0;
+            width: 7px;
+            height: 28px;
+            background: #090d0b;
+            border-radius: 999px;
+            transform-origin: top center;
+            animation: cryptid-step 1.1s ease-in-out infinite;
+        }
+        .cryptid-leg.left {
+            left: 20px;
+        }
+        .cryptid-leg.right {
+            left: 32px;
+            animation-delay: 0.55s;
+        }
+        @keyframes moth-flutter {
+            0% { transform: translate3d(-8vw, 12vh, 0) rotate(-8deg); opacity: 0; }
+            12% { opacity: 1; }
+            28% { transform: translate3d(20vw, 4vh, 0) rotate(14deg); }
+            48% { transform: translate3d(44vw, 16vh, 0) rotate(-12deg); }
+            72% { transform: translate3d(72vw, 8vh, 0) rotate(10deg); }
+            100% { transform: translate3d(110vw, 18vh, 0) rotate(-8deg); opacity: 0; }
+        }
+        @keyframes sleepy-z {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            45% { opacity: 0.9; }
+            100% { transform: translateY(-18px) scale(1.2); opacity: 0; }
+        }
+        @keyframes cryptid-walk {
+            from { transform: translateX(0); }
+            to { transform: translateX(calc(100vw + 160px)); }
+        }
+        @keyframes cryptid-step {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(12deg); }
+        }
+        @keyframes raccoon-scurry {
+            0% { transform: translateX(0); opacity: 0; }
+            7% { opacity: 0.96; }
+            83% { opacity: 0.96; }
+            100% { transform: translateX(calc(100vw + 220px)); opacity: 0; }
+        }
+        @keyframes raccoon-tail {
+            from { transform: rotate(6deg); }
+            to { transform: rotate(-10deg); }
+        }
+        @keyframes raccoon-step {
+            0%, 100% { transform: translateX(0) rotate(8deg); }
+            50% { transform: translateX(5px) rotate(-10deg); }
+        }
         .snail-traversal {
             position: fixed;
-            bottom: 20px;
-            left: -50px;
-            font-size: 1.5rem;
+            bottom: 18px;
+            left: 110vw;
+            width: 96px;
+            height: 54px;
             z-index: 5;
             transition: left 10s linear;
+            pointer-events: none;
+        }
+        .snail-traversal.snail {
+            width: 96px;
+            height: 54px;
+        }
+        .snail-traversal.tortoise {
+            bottom: 10px;
+            width: 190px;
+            height: 108px;
+        }
+        .snail-body {
+            position: absolute;
+            left: 12px;
+            bottom: 8px;
+            width: 68px;
+            height: 18px;
+            background: linear-gradient(#9f8e57, #6f633d);
+            border-radius: 999px 999px 12px 12px;
+            animation: snail-crawl 0.9s ease-in-out infinite;
+        }
+        .snail-head {
+            position: absolute;
+            left: 0;
+            bottom: 16px;
+            width: 30px;
+            height: 22px;
+            background: #9f8e57;
+            border-radius: 60% 45% 45% 60%;
+            animation: snail-head-bob 1.2s ease-in-out infinite;
+        }
+        .snail-shell {
+            position: absolute;
+            left: 38px;
+            bottom: 18px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 52% 52%, #7b4b2a 0 15%, transparent 16%),
+                conic-gradient(from 30deg, #5a351f, #b7783f, #6b3f24, #c28a4f, #5a351f);
+            box-shadow: inset -5px -6px 8px rgba(0,0,0,0.28), 0 2px 3px rgba(0,0,0,0.22);
+            animation: snail-shell-rock 1.1s ease-in-out infinite;
+        }
+        .snail-eye {
+            position: absolute;
+            left: 8px;
+            bottom: 34px;
+            width: 16px;
+            height: 18px;
+            border-left: 2px solid #6f633d;
+            transform-origin: bottom center;
+            animation: snail-eye-wave 1.6s ease-in-out infinite;
+        }
+        .snail-eye::after {
+            content: "";
+            position: absolute;
+            top: -3px;
+            left: -5px;
+            width: 8px;
+            height: 8px;
+            background: #1b130d;
+            border-radius: 50%;
+            box-shadow: inset 2px 2px 0 rgba(255,255,255,0.35);
+        }
+        .snail-eye.two {
+            left: 19px;
+            animation-delay: 0.25s;
+        }
+        .tortoise-shell {
+            position: absolute;
+            left: 48px;
+            bottom: 30px;
+            width: 100px;
+            height: 60px;
+            border-radius: 54% 46% 44% 56% / 62% 62% 38% 38%;
+            background:
+                linear-gradient(90deg, transparent 48%, rgba(39, 55, 29, 0.55) 49% 52%, transparent 53%),
+                linear-gradient(35deg, transparent 46%, rgba(39, 55, 29, 0.45) 47% 51%, transparent 52%),
+                linear-gradient(-35deg, transparent 46%, rgba(39, 55, 29, 0.45) 47% 51%, transparent 52%),
+                radial-gradient(circle at 42% 30%, #7e9850, #4f6f32 68%, #31481f 100%);
+            border: 4px solid #2d431d;
+            box-shadow: inset -10px -12px 12px rgba(0,0,0,0.22), 0 3px 5px rgba(0,0,0,0.25);
+            animation: tortoise-shell-bob 1.25s ease-in-out infinite;
+        }
+        .tortoise-body {
+            position: absolute;
+            left: 26px;
+            bottom: 20px;
+            width: 132px;
+            height: 34px;
+            background: #637541;
+            border-radius: 999px 999px 20px 20px;
+        }
+        .tortoise-head {
+            position: absolute;
+            left: 2px;
+            bottom: 40px;
+            width: 40px;
+            height: 32px;
+            background: #74864a;
+            border-radius: 58% 42% 44% 56%;
+            animation: tortoise-head-stretch 1.6s ease-in-out infinite;
+        }
+        .tortoise-head::after {
+            content: "";
+            position: absolute;
+            left: 9px;
+            top: 9px;
+            width: 6px;
+            height: 6px;
+            background: #14140e;
+            border-radius: 50%;
+        }
+        .tortoise-leg {
+            position: absolute;
+            bottom: 8px;
+            width: 26px;
+            height: 18px;
+            background: #556839;
+            border-radius: 10px;
+            animation: tortoise-step 0.9s ease-in-out infinite;
+        }
+        .tortoise-leg.front {
+            left: 42px;
+        }
+        .tortoise-leg.back {
+            left: 116px;
+            animation-delay: 0.45s;
+        }
+        .tortoise-tail {
+            position: absolute;
+            right: 22px;
+            bottom: 34px;
+            width: 18px;
+            height: 10px;
+            background: #556839;
+            border-radius: 0 999px 999px 0;
+        }
+        @keyframes snail-crawl {
+            0%, 100% { transform: scaleX(1) translateY(0); }
+            50% { transform: scaleX(0.94) translateY(2px); }
+        }
+        @keyframes snail-head-bob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        @keyframes snail-shell-rock {
+            0%, 100% { transform: rotate(-4deg); }
+            50% { transform: rotate(5deg) translateY(1px); }
+        }
+        @keyframes snail-eye-wave {
+            0%, 100% { transform: rotate(-9deg); }
+            50% { transform: rotate(8deg); }
+        }
+        @keyframes tortoise-shell-bob {
+            0%, 100% { transform: translateY(0) rotate(-1deg); }
+            50% { transform: translateY(3px) rotate(1deg); }
+        }
+        @keyframes tortoise-head-stretch {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(-6px); }
+        }
+        @keyframes tortoise-step {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            50% { transform: translateX(-7px) rotate(-8deg); }
         }
         .tree {
             position: fixed;
@@ -185,29 +1135,44 @@
             opacity: 1;
         }
         .tree-trunk {
-            width: 45px;
-            background: #4e342e;
+            width: 56px;
+            background: linear-gradient(90deg, #3a211c 0%, #5a3329 42%, #6d4035 68%, #3b211c 100%);
             height: 0;
             transition: height 5s ease-out;
             position: relative;
-            border-radius: 5px 5px 0 0;
-            box-shadow: inset 5px 0 10px rgba(0,0,0,0.3);
+            border-radius: 20px 20px 4px 4px;
+            box-shadow: inset 8px 0 14px rgba(0,0,0,0.28), inset -5px 0 10px rgba(255,255,255,0.08);
+        }
+        .tree-trunk::before {
+            content: "";
+            position: absolute;
+            inset: 20px 9px 0 12px;
+            border-left: 3px solid rgba(36, 20, 15, 0.38);
+            border-right: 2px solid rgba(255,255,255,0.08);
+            border-radius: 45%;
+            opacity: 0;
+            transition: opacity 2s ease-out 2.5s;
+        }
+        .tree.growing .tree-trunk::before {
+            opacity: 1;
         }
         .tree-branch {
             position: absolute;
-            background: #4e342e;
-            height: 15px;
+            background: linear-gradient(#6a3d31, #3d241f);
+            height: 18px;
             width: 0;
             transition: width 5s ease-out;
             transform-origin: left center;
-            border-radius: 10px;
-            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.2);
+            border-radius: 999px;
+            box-shadow: inset 0 -5px 8px rgba(0,0,0,0.22);
         }
         .tree-branch.left {
-            transform: rotate(-30deg);
+            transform: rotate(30deg);
+            transform-origin: right center;
         }
         .tree-branch.right {
-            transform: rotate(30deg);
+            transform: rotate(-30deg);
+            transform-origin: left center;
         }
         .tree-foliage {
             width: 0;
@@ -225,16 +1190,16 @@
             height: 450px;
         }
         .tree.growing .tree-branch {
-            width: 120px;
+            width: 145px;
         }
         .tree.growing .tree-foliage {
-            width: 180px;
-            height: 180px;
-            font-size: 3.75rem;
+            width: 210px;
+            height: 190px;
+            font-size: 3.9rem;
         }
         .tree.growing .tree-branch .tree-foliage {
-            width: 128px;
-            height: 128px;
+            width: 142px;
+            height: 132px;
             font-size: 2.85rem;
         }
         .tree-foliage span {
@@ -255,7 +1220,7 @@
             to { transform: scale(1); opacity: 1; }
         }
         .tree-foliage {
-            background: #2e7d32;
+            background: radial-gradient(circle at 34% 28%, #3f9640 0%, #2f8734 45%, #226f28 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -263,24 +1228,71 @@
             transition: all 5s ease-out;
             position: absolute;
             border-radius: 40% 60% 50% 50% / 50% 40% 60% 50%;
-            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.2);
+            box-shadow: inset -16px -18px 24px rgba(0,0,0,0.18), inset 10px 10px 16px rgba(255,255,255,0.05);
         }
         .tree-foliage.main {
-            top: -90px;
-            left: -79px;
+            top: -122px;
+            left: -78px;
+            border-radius: 54% 46% 50% 50% / 48% 54% 46% 52%;
         }
         .tree-branch.left .tree-foliage {
-            top: -83px;
-            right: -90px;
-            border-radius: 60% 40% 50% 50% / 40% 50% 60% 50%;
+            top: -84px;
+            left: -98px;
+            border-radius: 56% 44% 58% 42% / 45% 52% 48% 55%;
         }
         .tree-branch.right .tree-foliage {
-            top: -83px;
-            left: 90px;
-            border-radius: 50% 50% 40% 60% / 50% 60% 40% 50%;
+            top: -84px;
+            left: 98px;
+            border-radius: 44% 56% 42% 58% / 52% 45% 55% 48%;
         }
-        .tree.breezy {
-            animation: tree-breeze 4s infinite ease-in-out;
+        .tree-branch.upper .tree-foliage {
+            width: 0;
+            height: 0;
+        }
+        .tree.growing .tree-branch.upper .tree-foliage {
+            width: 158px;
+            height: 150px;
+        }
+        .tree.growing .tree-branch.lower .tree-foliage {
+            width: 132px;
+            height: 124px;
+        }
+        .tree-nest {
+            position: absolute;
+            left: 78px;
+            top: -18px;
+            width: 46px;
+            height: 24px;
+            border-radius: 50%;
+            background:
+                radial-gradient(ellipse at 50% 35%, transparent 0 34%, rgba(57, 31, 20, 0.9) 35% 60%, transparent 61%),
+                repeating-linear-gradient(150deg, #6a3b25 0 5px, #3d2318 5px 9px);
+            box-shadow: inset 0 -5px 0 rgba(40, 21, 14, 0.45), 0 2px 5px rgba(0,0,0,0.25);
+            opacity: 0;
+            transform: rotate(26deg) scale(0.7);
+            transition: opacity 1s ease-out 3.5s, transform 1s ease-out 3.5s;
+            z-index: 3;
+        }
+        .tree-nest span {
+            position: absolute;
+            bottom: 11px;
+            width: 10px;
+            height: 14px;
+            background: #dce8d5;
+            border-radius: 50%;
+            box-shadow: inset -2px -2px 0 rgba(68, 93, 80, 0.18);
+        }
+        .tree-nest span:first-child {
+            left: 14px;
+            transform: rotate(-12deg);
+        }
+        .tree-nest span:last-child {
+            left: 24px;
+            transform: rotate(10deg);
+        }
+        .tree.growing .tree-nest {
+            opacity: 1;
+            transform: rotate(26deg) scale(1);
         }
         .money-drop {
             --fall-duration: 2.2s;
@@ -305,6 +1317,90 @@
             transform: rotate(var(--pile-tilt, 0deg));
             opacity: 1;
         }
+        .money-cleanup-z {
+            position: fixed;
+            font-size: 50px;
+            line-height: 1;
+            height: 50px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: #111827;
+            opacity: 0.045;
+            font-weight: 900;
+            cursor: pointer;
+            user-select: none;
+            z-index: 12;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .money-cleanup-z:hover {
+            opacity: 0.12;
+            transform: scale(1.06);
+        }
+        .money-sweeper {
+            --sweeper-start: -360px;
+            --sweeper-end: calc(100vw + 360px);
+            position: fixed;
+            bottom: 8px;
+            left: 0;
+            width: 320px;
+            height: 128px;
+            pointer-events: none;
+            z-index: 11;
+            animation: money-sweeper-drive 9s linear forwards;
+            will-change: transform;
+        }
+        .money-sweeper.snow-sweeper {
+            bottom: 2px;
+            z-index: 12;
+        }
+        .money-sweeper-body {
+            position: absolute;
+            left: 64px;
+            bottom: 32px;
+            width: 176px;
+            height: 68px;
+            background: #d9f2ff;
+            border: 6px solid #2f6f8f;
+            border-radius: 16px 16px 10px 10px;
+            box-shadow: inset 0 -16px 0 rgba(47, 111, 143, 0.18);
+        }
+        .money-sweeper-cab {
+            position: absolute;
+            left: 150px;
+            bottom: 92px;
+            width: 76px;
+            height: 56px;
+            background: #f8fbff;
+            border: 6px solid #2f6f8f;
+            border-radius: 14px 14px 6px 6px;
+        }
+        .money-sweeper-plow {
+            position: absolute;
+            left: 236px;
+            bottom: 16px;
+            width: 76px;
+            height: 92px;
+            background: #cfd8dc;
+            border: 6px solid #607d8b;
+            border-radius: 10px 24px 24px 10px;
+            transform: skewX(-15deg);
+        }
+        .money-sweeper-wheel {
+            position: absolute;
+            bottom: 12px;
+            width: 40px;
+            height: 40px;
+            background: #263238;
+            border: 8px solid #78909c;
+            border-radius: 50%;
+        }
+        .money-sweeper-wheel.front {
+            left: 192px;
+        }
+        .money-sweeper-wheel.back {
+            left: 80px;
+        }
         @keyframes money-fall {
             0% {
                 transform: translate3d(0, 0, 0) rotate(0deg);
@@ -315,9 +1411,23 @@
                 opacity: 1;
             }
         }
-        @keyframes tree-breeze {
-            0%, 100% { transform: rotate(-2deg); }
-            50% { transform: rotate(2deg); }
+        @keyframes money-sweeper-drive {
+            from {
+                transform: translateX(var(--sweeper-start));
+            }
+            to {
+                transform: translateX(var(--sweeper-end));
+            }
+        }
+        @keyframes snow-pile-grow {
+            from {
+                transform: translateX(-50%) scaleY(0.18);
+                opacity: 0.35;
+            }
+            to {
+                transform: translateX(-50%) scaleY(1);
+                opacity: 0.96;
+            }
         }
         body.meadow-wilted .tree-trunk {
             background: #3e2723;
@@ -327,9 +1437,6 @@
             opacity: 0.7;
         }
         body:not(.meadow-active) .tree {
-            opacity: 0;
-        }
-        body:not(.meadow-active) .money-drop {
             opacity: 0;
         }
         /* Double exposure effect simulation */
@@ -431,6 +1538,14 @@
         .tally-mark.mode-4x4 { background: #0275d8; }     /* Blue */
         .tally-mark.mode-3d { background: #5cb85c; }      /* Green */
         .tally-mark.mode-4x4x4 { background: #5bc0de; }   /* Cyan/Purple-ish */
+        body.hard-mode-active .tally-mark {
+            box-shadow: 0 0 5px rgba(255, 227, 154, 0.5);
+        }
+        body.hard-mode-active .tally-mark.mode-default { background: #ffe39a; }
+        body.hard-mode-active .tally-mark.mode-misere { background: #ff6b5f; }
+        body.hard-mode-active .tally-mark.mode-4x4 { background: #7db7ff; }
+        body.hard-mode-active .tally-mark.mode-3d { background: #94e68f; }
+        body.hard-mode-active .tally-mark.mode-4x4x4 { background: #8be8f2; }
 
         .tally-mark:nth-child(1) { left: 5px; transform: rotate(2deg); }
         .tally-mark:nth-child(2) { left: 13px; transform: rotate(-1deg); }
@@ -623,6 +1738,54 @@
             font-weight: bold;
             box-shadow: 0 0 20px #8b0000;
         }
+        #debug-panel {
+            display: none;
+            width: min(760px, calc(100vw - 40px));
+            margin-top: 24px;
+            border: 1px solid #777;
+            background: rgba(255,255,255,0.94);
+            color: #222;
+            text-align: left;
+            z-index: 20;
+        }
+        #debug-panel summary {
+            cursor: pointer;
+            padding: 10px 12px;
+            font-weight: 700;
+            user-select: none;
+        }
+        .debug-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            padding: 0 12px 12px;
+        }
+        .debug-group {
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        .debug-group-title {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .debug-group label {
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        .debug-group select,
+        .debug-group input[type="time"] {
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 4px;
+        }
+        body.hard-mode-active #debug-panel {
+            background: rgba(8, 4, 3, 0.96);
+            color: #f7e7b3;
+            border-color: #d7b46a;
+        }
         /* Responsive adjustments */
         @media (max-width: 600px) {
             #game-container {
@@ -760,6 +1923,8 @@
 </head>
 <body>
     <div id="message-overlay"></div>
+    <div id="meadow-sky-layer" aria-hidden="true"></div>
+    <div id="meadow-weather-layer" aria-hidden="true"></div>
     <h1 id="game-title">Tic-Tac-Toe</h1>
     <div id="game-container">
         <div class="score-wrapper">
@@ -847,6 +2012,53 @@
         <button id="reset" style="visibility: hidden;">Reset Game</button>
         <button id="reset-scores" style="background-color: #ffcccc;">Reset All Scores</button>
     </div>
+    <details id="debug-panel">
+        <summary>Local Debug</summary>
+        <div class="debug-grid">
+            <div class="debug-group">
+                <span class="debug-group-title">Game Modes</span>
+                <label><input type="checkbox" id="debug-misere"> Misère</label>
+                <label><input type="checkbox" id="debug-4x4"> 4x4</label>
+                <label><input type="checkbox" id="debug-3d"> 3D</label>
+                <label><input type="checkbox" id="debug-4x4x4"> 4x4x4</label>
+                <label><input type="checkbox" id="debug-hard-mode"> Hard mode</label>
+            </div>
+            <div class="debug-group">
+                <span class="debug-group-title">Features</span>
+                <label><input type="checkbox" id="debug-meadow"> Meadow</label>
+                <label><input type="checkbox" id="debug-monsters"> Monsters</label>
+                <label><input type="checkbox" id="debug-tree"> Tree</label>
+                <label><input type="checkbox" id="debug-money"> Money pile</label>
+                <label><input type="checkbox" id="debug-creature"> Slow creature</label>
+            </div>
+            <div class="debug-group">
+                <span class="debug-group-title">Meadow Environment</span>
+                <label>
+                    Location
+                    <select id="debug-location">
+                        <option value="local">Local browser location</option>
+                        <option value="sheffield">Shefffield UK</option>
+                        <option value="manila">Manilla</option>
+                        <option value="moscow">Moscow</option>
+                        <option value="sydney">Sydney Australia</option>
+                    </select>
+                </label>
+                <label>
+                    Meadow time
+                    <input type="time" id="debug-meadow-time">
+                </label>
+                <label><input type="checkbox" id="debug-system-time" checked> Use system time</label>
+                <span class="debug-group-title">Weather effects</span>
+                <label><input type="checkbox" id="debug-weather-clear"> Clear</label>
+                <label><input type="checkbox" id="debug-weather-cloudy"> Cloudy</label>
+                <label><input type="checkbox" id="debug-weather-rain"> Rain</label>
+                <label><input type="checkbox" id="debug-weather-snow"> Snow</label>
+                <label><input type="checkbox" id="debug-weather-fog"> Fog</label>
+                <label><input type="checkbox" id="debug-weather-storm"> Storm</label>
+                <label><input type="checkbox" id="debug-weather-windy"> Windy</label>
+            </div>
+        </div>
+    </details>
 
     <script src="dist/index.js"></script>
 </body>
