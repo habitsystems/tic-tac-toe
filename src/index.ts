@@ -952,8 +952,12 @@ function getDebugLocationCoordinates() {
     return debugWeatherLocations[debugWeatherLocation] ?? null;
 }
 
+function twoDigit(value: number) {
+    return value < 10 ? `0${value}` : value.toString();
+}
+
 function getTimeZoneDateParts(date: Date, timeZone: string) {
-    const parts = new Intl.DateTimeFormat('en-GB', {
+    const formatted = new Intl.DateTimeFormat('en-GB', {
         timeZone,
         hour12: false,
         year: 'numeric',
@@ -962,16 +966,27 @@ function getTimeZoneDateParts(date: Date, timeZone: string) {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit'
-    }).formatToParts(date);
+    }).format(date);
 
-    const partValue = (type: string) => Number(parts.find((part) => part.type === type)?.value ?? 0);
+    const match = formatted.match(/^(\d{2})\/(\d{2})\/(\d{4}),?\s+(\d{2}):(\d{2}):(\d{2})$/);
+    if (!match) {
+        return {
+            year: date.getFullYear(),
+            month: date.getMonth() + 1,
+            day: date.getDate(),
+            hour: date.getHours(),
+            minute: date.getMinutes(),
+            second: date.getSeconds()
+        };
+    }
+
     return {
-        year: partValue('year'),
-        month: partValue('month'),
-        day: partValue('day'),
-        hour: partValue('hour'),
-        minute: partValue('minute'),
-        second: partValue('second')
+        day: Number(match[1]),
+        month: Number(match[2]),
+        year: Number(match[3]),
+        hour: Number(match[4]),
+        minute: Number(match[5]),
+        second: Number(match[6])
     };
 }
 
@@ -1528,8 +1543,8 @@ function applyMeadowWeather(weatherClass: string, isWindy: boolean) {
 function addWeatherElement(className: string, styles: Record<string, string>) {
     const element = document.createElement('span');
     element.className = className;
-    Object.entries(styles).forEach(([property, value]) => {
-        element.style.setProperty(property, value);
+    Object.keys(styles).forEach((property) => {
+        element.style.setProperty(property, styles[property]);
     });
     meadowWeatherLayer.appendChild(element);
 }
@@ -2581,7 +2596,7 @@ function setupDebugPanel() {
 
     debugPanel.style.display = 'block';
     const now = new Date();
-    debugMeadowTimeInput.value = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    debugMeadowTimeInput.value = `${twoDigit(now.getHours())}:${twoDigit(now.getMinutes())}`;
     debugMeadowTimeInput.disabled = true;
 
     debugMisereToggle.checked = misereToggle.checked;
@@ -2615,7 +2630,7 @@ function setupDebugPanel() {
         debugMeadowTimeInput.disabled = debugSystemTimeToggle.checked;
         if (!debugSystemTimeToggle.checked && !debugMeadowTimeInput.value) {
             const current = new Date();
-            debugMeadowTimeInput.value = `${current.getHours().toString().padStart(2, '0')}:${current.getMinutes().toString().padStart(2, '0')}`;
+            debugMeadowTimeInput.value = `${twoDigit(current.getHours())}:${twoDigit(current.getMinutes())}`;
         }
         applyDebugEnvironmentOverrides();
     });
